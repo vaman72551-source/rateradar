@@ -23,6 +23,38 @@ export default async function handler(req, res) {
   const apiKey = process.env.RAPIDAPI_KEY;
 
   try {
+    if (!apiKey) {
+      // If no API key is present, use DuckDuckGo to find TripAdvisor key.
+      // This is a robust, free fallback that resolves the exact TripAdvisor hotel key.
+      try {
+        const query = `${q} site:tripadvisor.com`;
+        const ddgUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+        const ddgRes = await fetch(ddgUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+          }
+        });
+        if (ddgRes.ok) {
+          const html = await ddgRes.text();
+          const regex = /Hotel_Review-g(\d+)-d(\d+)/;
+          const match = html.match(regex);
+          if (match) {
+            const key = `g${match[1]}-d${match[2]}`;
+            return res.status(200).json({
+              result: [{
+                hotel_key: key,
+                key: key,
+                name: q
+              }],
+              timestamp: Date.now()
+            });
+          }
+        }
+      } catch (ddgErr) {
+        console.warn("DuckDuckGo key resolution fallback failed:", ddgErr.message);
+      }
+    }
+
     let url;
     let headers = {};
 
@@ -52,4 +84,5 @@ export default async function handler(req, res) {
       error: { status_code: 500, message: error.message }
     });
   }
+
 }
