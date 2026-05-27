@@ -353,7 +353,7 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                         href={otaRow.deeplink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => handleOtaClick(otaRow.name, displayRate)}
+                        onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
                         className={`inline-flex items-center gap-1 px-5 py-2 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${isCheapest ? 'bg-accent-gold text-primary hover:bg-accent-gold/90' : 'bg-primary border border-border text-text-primary hover:text-accent-gold'}`}
                       >
                         Book Now <ExternalLink size={12} />
@@ -433,7 +433,7 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                   href={otaRow.deeplink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => handleOtaClick(otaRow.name, displayRate)}
+                  onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
                   className={`w-full py-2.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2 ${isCheapest ? 'bg-accent-gold text-primary' : 'bg-primary border border-border text-text-primary'}`}
                 >
                   Book Now <ExternalLink size={12} />
