@@ -17,29 +17,51 @@ function buildOtaLink(otaCode, otaName, hotelName, hotelKey, checkin, checkout, 
   const otaSlug = cleanOtaSlug(otaName);
   const origOtaSlug = originalOta ? cleanOtaSlug(originalOta) : '';
 
-  // 1. If the user pasted a link for this specific OTA, forward directly to it
+  // 1. If the user pasted a link for this specific OTA, forward directly to it with customized parameters
   if (originalUrl && origOtaSlug === otaSlug) {
     try {
       const url = new URL(originalUrl);
-      
-      // Construct a clean, sanitized URL without any old labels, sids, or search states
-      // This prevents Booking.com from redirecting based on label history.
       const cleanUrl = new URL(url.origin + url.pathname);
-      cleanUrl.searchParams.set('checkin', checkin);
-      cleanUrl.searchParams.set('checkout', checkout);
       
-      // Inject official partner IDs
       if (otaSlug === 'bookingcom') {
+        cleanUrl.searchParams.set('checkin', checkin);
+        cleanUrl.searchParams.set('checkout', checkout);
         cleanUrl.searchParams.set('aid', 'rateradar20');
         cleanUrl.searchParams.set('group_adults', String(guests || 2));
         cleanUrl.searchParams.set('no_rooms', '1');
       } else if (otaSlug === 'agoda') {
+        cleanUrl.searchParams.set('checkin', checkin);
+        cleanUrl.searchParams.set('checkout', checkout);
+        cleanUrl.searchParams.set('checkIn', checkin);
+        cleanUrl.searchParams.set('checkOut', checkout);
+        cleanUrl.searchParams.set('rooms', '1');
+        cleanUrl.searchParams.set('adults', String(guests || 2));
         cleanUrl.searchParams.set('cid', 'rateradar_cid');
       } else if (otaSlug === 'expedia') {
+        cleanUrl.searchParams.set('startDate', checkin);
+        cleanUrl.searchParams.set('endDate', checkout);
+        cleanUrl.searchParams.set('d1', checkin);
+        cleanUrl.searchParams.set('d2', checkout);
+        cleanUrl.searchParams.set('rooms', '1');
+        cleanUrl.searchParams.set('adults', String(guests || 2));
         cleanUrl.searchParams.set('siteid', 'rateradar_site');
       } else if (otaSlug === 'makemytrip') {
+        const mmtIn = toMMDDYYYY(checkin);
+        const mmtOut = toMMDDYYYY(checkout);
+        cleanUrl.searchParams.set('checkin', mmtIn);
+        cleanUrl.searchParams.set('checkout', mmtOut);
+        cleanUrl.searchParams.set('roomStayQualifier', `${guests || 2}e0e`);
         cleanUrl.searchParams.set('affiliateId', 'rateradar');
+      } else if (otaSlug === 'tripcom') {
+        cleanUrl.searchParams.set('checkIn', checkin);
+        cleanUrl.searchParams.set('checkOut', checkout);
+        cleanUrl.searchParams.set('room', '1');
+        cleanUrl.searchParams.set('adult', String(guests || 2));
+        cleanUrl.searchParams.set('allianceid', 'rateradar');
+        cleanUrl.searchParams.set('sid', 'rateradar');
       } else {
+        cleanUrl.searchParams.set('checkin', checkin);
+        cleanUrl.searchParams.set('checkout', checkout);
         cleanUrl.searchParams.set('aff', 'rateradar');
       }
       return cleanUrl.toString();
@@ -50,31 +72,31 @@ function buildOtaLink(otaCode, otaName, hotelName, hotelKey, checkin, checkout, 
 
   // 2. Fallback search routing
   if (otaSlug === 'bookingcom') {
-    return `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotelName)}&checkin=${checkin}&checkout=${checkout}&aid=rateradar20`;
+    return `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotelName)}&checkin=${checkin}&checkout=${checkout}&group_adults=${guests}&no_rooms=1&aid=rateradar20`;
   }
   
   if (otaSlug === 'agoda') {
     if (hotelKey && /^\d+$/.test(hotelKey)) {
-      return `https://www.agoda.com/en-gb/hotel/city/${hotelKey}.html?checkin=${checkin}&checkout=${checkout}&cid=rateradar_cid`;
+      return `https://www.agoda.com/en-gb/hotel/city/${hotelKey}.html?checkin=${checkin}&checkout=${checkout}&checkIn=${checkin}&checkOut=${checkout}&rooms=1&adults=${guests}&cid=rateradar_cid`;
     }
-    return `https://www.agoda.com/search?query=${encodeURIComponent(hotelName)}&checkin=${checkin}&checkout=${checkout}&cid=rateradar_cid`;
+    return `https://www.agoda.com/en-gb/search?ss=${encodeURIComponent(hotelName)}&checkin=${checkin}&checkout=${checkout}&checkIn=${checkin}&checkOut=${checkout}&rooms=1&adults=${guests}&cid=rateradar_cid`;
   }
 
   if (otaSlug === 'makemytrip') {
     const mmtIn = toMMDDYYYY(checkin);
     const mmtOut = toMMDDYYYY(checkout);
-    return `https://www.makemytrip.com/hotels/hotel-listing/?checkin=${mmtIn}&checkout=${mmtOut}&searchText=${encodeURIComponent(hotelName)}&roomStayQualifier=2e0e&affiliateId=rateradar`;
+    return `https://www.makemytrip.com/hotels/hotel-listing/?checkin=${mmtIn}&checkout=${mmtOut}&searchText=${encodeURIComponent(hotelName)}&roomStayQualifier=${guests}e0e&affiliateId=rateradar`;
   }
 
   if (otaSlug === 'expedia') {
     if (hotelKey && /^\d+$/.test(hotelKey)) {
-      return `https://www.expedia.com/h${hotelKey}.Hotel-Information?startDate=${checkin}&endDate=${checkout}&siteid=rateradar_site`;
+      return `https://www.expedia.com/h${hotelKey}.Hotel-Information?startDate=${checkin}&endDate=${checkout}&d1=${checkin}&d2=${checkout}&rooms=1&adults=${guests}&siteid=rateradar_site`;
     }
-    return `https://www.expedia.com/Hotel-Search?destination=${encodeURIComponent(hotelName)}&startDate=${checkin}&endDate=${checkout}&siteid=rateradar_site`;
+    return `https://www.expedia.com/Hotel-Search?destination=${encodeURIComponent(hotelName)}&startDate=${checkin}&endDate=${checkout}&d1=${checkin}&d2=${checkout}&rooms=1&adults=${guests}&siteid=rateradar_site`;
   }
 
   if (otaSlug === 'tripcom') {
-    return `https://www.trip.com/hotels/list?searchWord=${encodeURIComponent(hotelName)}&checkIn=${checkin}&checkOut=${checkout}&allianceid=rateradar&sid=rateradar`;
+    return `https://www.trip.com/hotels/list?searchWord=${encodeURIComponent(hotelName)}&checkIn=${checkin}&checkOut=${checkout}&room=1&adult=${guests}&allianceid=rateradar&sid=rateradar`;
   }
 
   return `https://www.google.com/search?q=${encodeURIComponent(hotelName + ' ' + otaName + ' booking')}`;
