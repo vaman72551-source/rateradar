@@ -218,16 +218,32 @@ export function parseHotelUrl(urlString) {
   }
 
   // Ensure dates are parsed as valid YYYY-MM-DD and set datesExtracted flag
-  result.datesExtracted = 
-    /^\d{4}-\d{2}-\d{2}$/.test(result.checkin) && 
-    /^\d{4}-\d{2}-\d{2}$/.test(result.checkout);
+  const checkinValid = /^\d{4}-\d{2}-\d{2}$/.test(result.checkin);
+  const checkoutValid = /^\d{4}-\d{2}-\d{2}$/.test(result.checkout);
 
-  if (result.datesExtracted) {
+  if (checkinValid && checkoutValid) {
     const start = new Date(result.checkin);
     const end = new Date(result.checkout);
-    result.nights = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+
+    // Get today's date in local time for comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const checkinDate = new Date(start);
+    checkinDate.setHours(0, 0, 0, 0);
+
+    if (checkinDate >= today && end > start) {
+      result.datesExtracted = true;
+      result.nights = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+    } else {
+      // If check-in is in the past or checkout is before/on checkin, force date input
+      result.datesExtracted = false;
+      result.checkin = '';
+      result.checkout = '';
+      result.nights = 0;
+    }
   } else {
-    // If not extracted, reset dates so application knows to ask the user
+    result.datesExtracted = false;
     result.checkin = '';
     result.checkout = '';
     result.nights = 0;
