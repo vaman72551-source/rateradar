@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RateRadar | Luxury Travel Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(19, 25, 41, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .metallic-border {
+            border: 1px solid rgba(212, 168, 83, 0.3);
+        }
+        .metallic-border:hover {
+            border: 1px solid rgba(212, 168, 83, 1);
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px -5px rgba(242, 195, 107, 0.1);
+        }
+        body {
+            background-color: #121411;
+            color: #e3e3de;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#1a1c19",
+                    "secondary": "#c2c6db",
+                    "on-secondary-container": "#b0b4c9",
+                    "tertiary": "#c4c9df",
+                    "secondary-fixed": "#dee1f7",
+                    "surface-container-lowest": "#0d0f0c",
+                    "on-tertiary-container": "#3c4253",
+                    "on-primary-fixed-variant": "#5d4200",
+                    "surface": "#121411",
+                    "inverse-primary": "#7b5804",
+                    "surface-container-highest": "#333532",
+                    "on-error": "#690005",
+                    "secondary-container": "#414658",
+                    "inverse-on-surface": "#2f312e",
+                    "surface-dim": "#121411",
+                    "secondary-fixed-dim": "#c2c6db",
+                    "on-primary-container": "#573d00",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#333532",
+                    "surface-container": "#1e201d",
+                    "primary-container": "#d4a853",
+                    "on-primary-fixed": "#271900",
+                    "on-secondary-fixed-variant": "#414658",
+                    "surface-container-high": "#292a27",
+                    "primary-fixed": "#ffdea6",
+                    "outline-variant": "#4e4637",
+                    "on-tertiary": "#2a3041",
+                    "outline": "#9b8f7e",
+                    "on-primary": "#412d00",
+                    "surface-bright": "#383a36",
+                    "primary-fixed-dim": "#eec068",
+                    "on-background": "#e3e3de",
+                    "error-container": "#93000a",
+                    "primary": "#f2c36b",
+                    "on-tertiary-fixed-variant": "#404658",
+                    "on-secondary": "#2b3040",
+                    "background": "#121411",
+                    "tertiary-container": "#a9aec3",
+                    "on-secondary-fixed": "#161b2b",
+                    "on-surface-variant": "#d2c5b2",
+                    "tertiary-fixed-dim": "#c0c6dc",
+                    "surface-tint": "#eec068",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#151b2b",
+                    "tertiary-fixed": "#dde2f8",
+                    "inverse-surface": "#e3e3de",
+                    "on-surface": "#e3e3de"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "unit": "4px",
+                    "stack-lg": "32px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "price-display": ["DM Sans"],
+                    "display-lg": ["Playfair Display"],
+                    "headline-sm": ["Playfair Display"],
+                    "headline-md": ["Playfair Display"],
+                    "body-lg": ["DM Sans"],
+                    "title-lg": ["DM Sans"],
+                    "label-md": ["DM Sans"],
+                    "body-md": ["DM Sans"]
+            },
+            "fontSize": {
+                    "price-display": ["24px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface text-on-surface overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm">
+<nav class="flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-stack-lg">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight">RateRadar</span>
+<div class="hidden md:flex gap-gutter ml-stack-lg">
+<a class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary pb-1" href="#">Explore</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Deals</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Saved</a>
+</div>
+</div>
+<div class="flex items-center gap-gutter">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all duration-300">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all duration-300">settings</button>
+<button class="flex items-center gap-unit bg-surface-container-high px-stack-md py-stack-sm rounded-full text-on-surface-variant font-label-md text-label-md hover:-translate-y-0.5 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    Profile
+                </button>
+</div>
+</nav>
+</header>
+<main class="relative">
+<!-- Background Atmospheric Element -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute top-[10%] -right-[5%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[100px]"></div>
+</div>
+<!-- Hero Section -->
+<section class="max-w-container-max mx-auto px-margin-desktop pt-stack-lg pb-24 text-center">
+<div class="max-w-4xl mx-auto space-y-stack-lg">
+<h1 class="font-display-lg text-display-lg text-on-surface leading-tight">
+                    Find the Cheapest Rate for Any Hotel
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    Paste any hotel link from your favorite booking site. We scan the entire travel market to compare 8+ premium booking platforms instantly.
+                </p>
+<!-- Input Area -->
+<div class="mt-stack-lg relative max-w-3xl mx-auto group">
+<div class="flex items-center bg-surface-container rounded-full p-2 metallic-border glow-accent transition-all duration-500 group-focus-within:ring-2 ring-primary/20">
+<span class="material-symbols-outlined text-outline ml-4">link</span>
+<input class="bg-transparent border-none focus:ring-0 flex-grow px-4 text-body-md font-body-md text-on-surface placeholder:text-on-surface-variant/50" placeholder="https://www.booking.com/hotel/..." type="text"/>
+<button class="bg-primary-container text-on-primary font-title-lg text-title-lg px-8 py-4 rounded-full flex items-center gap-2 hover:-translate-y-0.5 active:scale-95 transition-transform">
+                            Compare Rates <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Trust Indicators -->
+<div class="flex flex-wrap justify-center gap-gutter mt-stack-md text-label-md font-label-md text-on-surface-variant/70">
+<span class="flex items-center gap-unit"><span class="material-symbols-outlined text-[18px] text-primary">check_circle</span> Free</span>
+<span class="flex items-center gap-unit"><span class="material-symbols-outlined text-[18px] text-primary">no_accounts</span> No signup</span>
+<span class="flex items-center gap-unit"><span class="material-symbols-outlined text-[18px] text-primary">query_stats</span> 6-8 OTAs compared</span>
+<span class="flex items-center gap-unit"><span class="material-symbols-outlined text-[18px] text-primary">timer</span> Results in ~3 sec</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Content -->
+<section class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-12 gap-gutter pb-32">
+<!-- Live Feed Card (Left Column) -->
+<div class="col-span-12 lg:col-span-4 glass-card metallic-border rounded-lg p-stack-lg flex flex-col justify-between hover:-translate-y-1 transition-transform duration-300">
+<div class="space-y-stack-md">
+<div class="flex justify-between items-start">
+<div class="bg-primary/10 text-primary px-3 py-1 rounded-full text-label-md font-label-md flex items-center gap-1">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+                            LIVE FEED
+                        </div>
+<span class="text-on-surface-variant text-label-md font-label-md">2m ago</span>
+</div>
+<div class="relative rounded-md overflow-hidden h-40 group">
+<img alt="Luxury hotel suite" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="An ultra-luxury hotel suite interior featuring floor-to-ceiling windows overlooking a twilight city skyline. The room is designed with deep navy and charcoal textures, highlighted by warm gold ambient lighting. Elegant silk bedding and a designer velvet armchair create an atmosphere of high-end editorial sophistication. The lighting is soft and atmospheric, emphasizing a premium nocturnal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhDCHZk_kPL_qFZVt9CPnAn4heTDKilMq5m2qsnrl8vlbgqLrHJlZPhXp0KIVRABAT_gzljbyHlN6nKbF7eSyUwOQDSSn16JqMyovoyfbonmSAlD3vv28aJA-HlUCt-40NQtkW6U_oXizeTnr-U7ljLBJoqOOfVaFsokKlFE1PP2wgp3a8vpGN-cVX-y3WVH9CQ1i0_VgCjDNbty1Mm_8XoN5iuIOtt4rQh3O9u_cDHyrNc_yhNV7t-Lk0uO6TErBNSiMv5in66Vcq"/>
+</div>
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface">The Ritz-Carlton, Kyoto</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">User saved <span class="text-primary font-bold">$242/night</span></p>
+</div>
+</div>
+<div class="mt-stack-lg border-t border-outline-variant/30 pt-stack-md flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-[10px] font-bold">JD</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-primary-container flex items-center justify-center text-[10px] font-bold">ML</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-highest flex items-center justify-center text-[10px] font-bold">+12</div>
+</div>
+<span class="text-label-md font-label-md text-on-surface-variant">Verified by RateRadar AI</span>
+</div>
+</div>
+<!-- Main Feature Area (Right Side) -->
+<div class="col-span-12 lg:col-span-8 grid grid-cols-2 gap-gutter">
+<!-- Real-time Data Card -->
+<div class="col-span-2 md:col-span-1 glass-card metallic-border rounded-lg p-stack-lg space-y-stack-md hover:-translate-y-1 transition-transform duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Real-time Data</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Unlike aggregators that cache data for hours, we pull live rates directly from API endpoints the moment you click search.
+                    </p>
+<div class="pt-stack-md flex items-center gap-stack-md">
+<div class="h-1 bg-primary/20 flex-grow rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3"></div>
+</div>
+<span class="text-label-md font-label-md text-primary">Fastest Scan</span>
+</div>
+</div>
+<!-- Verified Deals Card -->
+<div class="col-span-2 md:col-span-1 glass-card metallic-border rounded-lg p-stack-lg space-y-stack-md hover:-translate-y-1 transition-transform duration-300">
+<div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-3xl">verified_user</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Verified Deals</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Every rate we find is verified as bookable. We filter out the "ghost inventory" and bait-and-switch pricing common on public sites.
+                    </p>
+<ul class="space-y-2 pt-2">
+<li class="flex items-center gap-2 text-label-md text-on-surface-variant"><span class="material-symbols-outlined text-[16px] text-primary">done</span> No hidden cleaning fees</li>
+<li class="flex items-center gap-2 text-label-md text-on-surface-variant"><span class="material-symbols-outlined text-[16px] text-primary">done</span> Includes tax estimates</li>
+</ul>
+</div>
+<!-- Broad Comparison Banner -->
+<div class="col-span-2 glass-card metallic-border rounded-lg p-stack-lg flex flex-col md:flex-row items-center gap-stack-lg bg-gradient-to-br from-surface-container/50 to-primary/5">
+<div class="flex-grow space-y-unit">
+<h4 class="font-title-lg text-title-lg text-on-surface">Deep Market Coverage</h4>
+<p class="text-body-md text-on-surface-variant">We compare wholesalers usually reserved for travel agents.</p>
+</div>
+<div class="flex gap-stack-lg opacity-40 grayscale group hover:grayscale-0 transition-all duration-500">
+<!-- Simulated Logos -->
+<div class="text-xl font-bold font-price-display italic text-on-surface">EXPEDIA</div>
+<div class="text-xl font-bold font-price-display italic text-on-surface">BOOKING</div>
+<div class="text-xl font-bold font-price-display italic text-on-surface">HOTELS.COM</div>
+<div class="text-xl font-bold font-price-display italic text-on-surface">AGODA</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Comparison Table Preview -->
+<section class="max-w-container-max mx-auto px-margin-desktop pb-32">
+<div class="text-center mb-stack-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface">The Intelligence Dashboard</h2>
+<p class="text-on-surface-variant font-body-md">Precision comparison that reveals the true market floor.</p>
+</div>
+<div class="glass-card metallic-border rounded-lg overflow-hidden">
+<div class="grid grid-cols-4 bg-surface-container-high py-4 px-stack-lg font-label-md text-label-md text-outline tracking-widest">
+<div>PROVIDER</div>
+<div>AVAILABILITY</div>
+<div>ROOM TYPE</div>
+<div class="text-right">PRICE / NIGHT</div>
+</div>
+<!-- Row 1 (Best Value) -->
+<div class="grid grid-cols-4 items-center py-6 px-stack-lg border-b border-outline-variant/20 hover:bg-primary/5 transition-colors relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="font-bold text-on-surface">Wholesale Direct</div>
+<div class="flex items-center gap-1 text-primary"><span class="material-symbols-outlined text-[16px]">check_circle</span> Instant</div>
+<div class="text-on-surface-variant">King Superior, Lake View</div>
+<div class="text-right">
+<div class="text-primary font-price-display text-price-display">$342</div>
+<div class="text-[10px] bg-primary text-on-primary px-2 py-0.5 rounded-full inline-block">BEST VALUE</div>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-4 items-center py-6 px-stack-lg border-b border-outline-variant/10 hover:bg-surface-container transition-colors">
+<div class="text-on-surface-variant opacity-60">Expedia Global</div>
+<div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">check_circle</span> Instant</div>
+<div class="text-on-surface-variant">King Superior, Lake View</div>
+<div class="text-right text-on-surface font-price-display text-price-display">$410</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-4 items-center py-6 px-stack-lg hover:bg-surface-container transition-colors">
+<div class="text-on-surface-variant opacity-60">Official Hotel Site</div>
+<div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">check_circle</span> Instant</div>
+<div class="text-on-surface-variant">King Superior, Lake View</div>
+<div class="text-right text-on-surface font-price-display text-price-display">$445</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-stack-lg border-t border-outline-variant/20 bg-surface-container-lowest dark:bg-surface-container-lowest">
+<div class="flex flex-col md:flex-row justify-between items-center py-stack-lg px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col items-center md:items-start mb-stack-md md:mb-0">
+<span class="font-headline-sm text-headline-sm text-primary mb-unit">RateRadar</span>
+<p class="font-label-md text-label-md text-secondary dark:text-secondary">© 2024 RateRadar Luxury Travel Intelligence. All rights reserved.</p>
+</div>
+<div class="flex gap-gutter font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Cookie Settings</a>
+<a class="hover:text-primary transition-colors" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for the search input focus
+        const searchInput = document.querySelector('input');
+        const searchWrapper = searchInput.closest('.metallic-border');
+        
+        searchInput.addEventListener('focus', () => {
+            searchWrapper.classList.remove('metallic-border');
+            searchWrapper.style.borderColor = 'rgba(212, 168, 83, 1)';
+            searchWrapper.style.boxShadow = '0 0 30px -5px rgba(242, 195, 107, 0.3)';
+        });
+        
+        searchInput.addEventListener('blur', () => {
+            searchWrapper.style.borderColor = '';
+            searchWrapper.style.boxShadow = '';
+            searchWrapper.classList.add('metallic-border');
+        });
+
+        // Simple mouse tracking parallax for the "atmospheric depth"
+        document.addEventListener('mousemove', (e) => {
+            const blobs = document.querySelectorAll('.rounded-full.blur-\\[120px\\], .rounded-full.blur-\\[100px\\]');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            blobs.forEach((blob, index) => {
+                const speed = (index + 1) * 20;
+                blob.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    </script>
+</body></html>

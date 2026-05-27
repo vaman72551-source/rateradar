@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RateRadar | Luxury Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@400;500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary-fixed": "#161b2b",
+                "on-secondary": "#2b3040",
+                "on-error-container": "#ffdad6",
+                "surface-bright": "#383a36",
+                "surface-tint": "#eec068",
+                "on-secondary-container": "#b0b4c9",
+                "surface-dim": "#121411",
+                "surface-container": "#1e201d",
+                "on-tertiary-fixed-variant": "#404658",
+                "outline-variant": "#4e4637",
+                "surface": "#121411",
+                "surface-variant": "#333532",
+                "surface-container-lowest": "#0d0f0c",
+                "tertiary-fixed-dim": "#c0c6dc",
+                "inverse-surface": "#e3e3de",
+                "error-container": "#93000a",
+                "primary": "#f2c36b",
+                "primary-container": "#d4a853",
+                "on-primary-fixed": "#271900",
+                "tertiary-container": "#a9aec3",
+                "inverse-primary": "#7b5804",
+                "outline": "#9b8f7e",
+                "tertiary-fixed": "#dde2f8",
+                "secondary": "#c2c6db",
+                "tertiary": "#c4c9df",
+                "primary-fixed": "#ffdea6",
+                "on-error": "#690005",
+                "on-surface-variant": "#d2c5b2",
+                "secondary-fixed": "#dee1f7",
+                "background": "#121411",
+                "on-surface": "#e3e3de",
+                "error": "#ffb4ab",
+                "primary-fixed-dim": "#eec068",
+                "secondary-container": "#414658",
+                "surface-container-high": "#292a27",
+                "inverse-on-surface": "#2f312e",
+                "secondary-fixed-dim": "#c2c6db",
+                "on-tertiary-fixed": "#151b2b",
+                "on-primary-container": "#573d00",
+                "on-secondary-fixed-variant": "#414658",
+                "on-background": "#e3e3de",
+                "on-primary-fixed-variant": "#5d4200",
+                "surface-container-low": "#1a1c19",
+                "on-tertiary": "#2a3041",
+                "on-tertiary-container": "#3c4253",
+                "surface-container-highest": "#333532",
+                "on-primary": "#412d00"
+            },
+            "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "unit": "4px",
+                "stack-sm": "8px",
+                "margin-mobile": "16px",
+                "stack-lg": "32px",
+                "margin-desktop": "40px",
+                "stack-md": "16px",
+                "gutter": "24px",
+                "container-max": "1280px"
+            },
+            "fontFamily": {
+                "price-display": ["DM Sans"],
+                "display-lg": ["Playfair Display"],
+                "body-md": ["DM Sans"],
+                "body-lg": ["DM Sans"],
+                "title-lg": ["DM Sans"],
+                "display-lg-mobile": ["Playfair Display"],
+                "headline-md": ["Playfair Display"],
+                "label-md": ["DM Sans"],
+                "headline-sm": ["Playfair Display"]
+            },
+            "fontSize": {
+                "price-display": ["24px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(19, 25, 41, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        .metallic-border {
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .metallic-border:hover {
+            border-color: rgba(212, 168, 83, 1);
+            transform: translateY(-4px);
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px -5px rgba(242, 195, 107, 0.1);
+        }
+        .active-glow {
+            box-shadow: 0 0 15px rgba(212, 168, 83, 0.4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="bg-surface sticky top-0 z-50 border-b border-outline-variant/30 flex justify-between items-center px-margin-mobile h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">menu</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tight">RateRadar</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A clean, professional avatar profile picture of a young male executive in a high-end business setting. The image is rendered in a soft-focus photographic style with warm, golden-hour lighting that complements a premium, luxury aesthetic. The background is a blurred high-end lounge with deep nocturnal tones and metallic accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUJtac4nPu9owzuC4oQlpEW8XdWtKpEhMnNpblNp5Xwq9S5p-DJlmryxY2QudHZC0JQgR7z11LR-bnL2p8xWO1N7lOrNElmJ1zOv1Q48eaUxn7DY2AiOkp4B6Q0QpxeOfMftDtNjWDTothiffFI0x_3K-q0nwqmLohXDlzZHMhbqwkuWSoLBLcE_1Yw6Uq3aFzAciH1hhpth5hbb1kCckr42si9wOmExW25A6p5Zm4g-Kn9b907erfLJWrjSMhV3VB43h_D504ub7h"/>
+</div>
+</header>
+<main class="px-margin-mobile pt-stack-md space-y-gutter">
+<!-- Selected Hotel Header Card -->
+<section class="glass-card metallic-border rounded-lg overflow-hidden glow-accent">
+<div class="flex gap-4 p-4">
+<div class="w-24 h-24 shrink-0 rounded-md overflow-hidden border border-outline-variant/50">
+<img class="w-full h-full object-cover" data-alt="A breathtaking view of a luxury hotel suite overlooking a moonlit cityscape. The interior features rich velvet textures in deep navy and gold accents, with floor-to-ceiling windows showing shimmering city lights. The lighting is cinematic and moody, emphasizing a sense of exclusive high-value travel and atmospheric depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDclhGPQUjG9vvcJ7VQI6I2G-jdXl7hqqJ-SsYYSk3Wzhym1k3dEautlqICO3EWnsqATNQihVhN8l7E6ELljY8SowHKlxOC08QsHQB4GspTKQgXZkmBPm6fXhT6-n6qQ9Oyi0PKUWmMEzV2AGVU8X05wRGUQntoTnQBAuJ2PH8UvDMF301D-BQwrFK19RzgT0EdhhRoK2P8aaeMop-Z_TXlWzspIwB4gS7cxOJR8QQbdbUqYWqMroTTEWRFjz6PzxhX_ntpmSSNBVz7"/>
+</div>
+<div class="flex flex-col justify-between py-1">
+<div>
+<div class="flex items-center gap-1 mb-1">
+<span class="text-primary-container text-[12px] font-bold tracking-widest uppercase">Luxury Collection</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">The Grand Regency</h2>
+<div class="flex items-center text-primary mt-0.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star_half</span>
+<span class="text-on-surface-variant font-label-md text-label-md ml-2">4.8 (1,240 reviews)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Search Context -->
+<div class="bg-surface-container-high/50 border-t border-outline-variant/20 px-4 py-3 flex justify-between items-center text-on-surface-variant">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-tighter font-bold text-outline">Stay</span>
+<span class="font-label-md text-label-md text-on-surface">Oct 12 — Oct 15</span>
+</div>
+<div class="w-px h-6 bg-outline-variant/40"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-tighter font-bold text-outline">Guests</span>
+<span class="font-label-md text-label-md text-on-surface">2 Adults</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">edit_calendar</span>
+</div>
+</section>
+<!-- Intelligence Alert -->
+<div class="bg-primary-container/10 border border-primary/30 rounded-lg p-3 flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<div>
+<p class="font-body-md text-body-md text-primary font-bold">RateRadar Intelligence</p>
+<p class="text-[13px] text-on-surface-variant leading-tight mt-1">Found a premium deal. <span class="text-primary font-bold">Save ₹2,400</span> compared to the highest market rate for these dates.</p>
+</div>
+</div>
+<!-- Filter & Sort Bar -->
+<section class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+<button class="shrink-0 flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md active-glow border border-primary/20">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                Price: Low to High
+            </button>
+<button class="shrink-0 flex items-center gap-2 px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-label-md border border-outline-variant/30">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                OTA Rating
+            </button>
+<button class="shrink-0 flex items-center gap-2 px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-label-md border border-outline-variant/30">
+<span class="material-symbols-outlined text-[18px]">event_available</span>
+                Free Cancellation
+            </button>
+</section>
+<!-- Results Canvas -->
+<section class="space-y-4">
+<!-- Best Price Card (Highlighted) -->
+<div class="glass-card metallic-border rounded-lg p-4 relative overflow-hidden ring-1 ring-primary/50 shadow-2xl bg-gradient-to-br from-surface-container to-surface">
+<div class="absolute top-0 right-0 bg-primary-container text-on-primary-container px-3 py-1 rounded-bl-lg font-label-md text-label-md font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                    Best Price
+                </div>
+<div class="flex justify-between items-start mb-6">
+<div class="flex flex-col">
+<div class="h-8 flex items-center">
+<!-- Agoda Logo Placeholder (Simulated) -->
+<span class="font-display-lg-mobile text-[22px] text-on-surface tracking-tighter opacity-100 transition-opacity">agoda</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+<span class="text-[12px] font-medium">Official Partner</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-primary font-price-display text-price-display">₹14,250</p>
+<p class="text-[11px] text-on-surface-variant">per night</p>
+</div>
+</div>
+<div class="flex justify-between items-end border-t border-outline-variant/20 pt-4">
+<div>
+<p class="text-on-surface-variant text-[13px] font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-primary-container text-[16px]">task_alt</span>
+                            Free Cancellation
+                        </p>
+<p class="text-on-surface-variant text-[13px] font-medium flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-primary-container text-[16px]">task_alt</span>
+                            Breakfast Included
+                        </p>
+<p class="text-[11px] text-outline mt-2 italic">Total ₹42,750 (inc. ₹4,500 taxes)</p>
+</div>
+<button class="bg-primary text-on-primary font-bold px-6 py-3 rounded-full hover:scale-105 active:scale-95 transition-all glow-accent">
+                        Book Now
+                    </button>
+</div>
+</div>
+<!-- Standard Card 1 -->
+<div class="glass-card metallic-border rounded-lg p-4 bg-surface-container-low/40">
+<div class="flex justify-between items-start mb-6">
+<div class="flex flex-col">
+<div class="h-8 flex items-center">
+<!-- Expedia Logo Placeholder -->
+<span class="font-display-lg-mobile text-[22px] text-on-surface-variant opacity-60 tracking-tighter group-hover:opacity-100 group-hover:text-on-surface transition-all">Expedia</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">star</span>
+<span class="text-[12px]">Excellent (9.2)</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-on-surface font-price-display text-price-display">₹15,100</p>
+<p class="text-[11px] text-on-surface-variant">per night</p>
+</div>
+</div>
+<div class="flex justify-between items-end border-t border-outline-variant/10 pt-4">
+<div>
+<p class="text-on-surface-variant text-[13px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+                            Non-refundable
+                        </p>
+<p class="text-[11px] text-outline mt-1">Total ₹45,300 (inc. taxes)</p>
+</div>
+<button class="border border-primary text-primary font-bold px-6 py-2 rounded-full hover:bg-primary/10 transition-all">
+                        View Deal
+                    </button>
+</div>
+</div>
+<!-- Standard Card 2 -->
+<div class="glass-card metallic-border rounded-lg p-4 bg-surface-container-low/40">
+<div class="flex justify-between items-start mb-6">
+<div class="flex flex-col">
+<div class="h-8 flex items-center">
+<!-- Booking.com Logo Placeholder -->
+<span class="font-display-lg-mobile text-[22px] text-on-surface-variant opacity-60 tracking-tighter">Booking.com</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">star</span>
+<span class="text-[12px]">Good (8.8)</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-on-surface font-price-display text-price-display">₹16,650</p>
+<p class="text-[11px] text-on-surface-variant">per night</p>
+</div>
+</div>
+<div class="flex justify-between items-end border-t border-outline-variant/10 pt-4">
+<div>
+<p class="text-on-surface-variant text-[13px] flex items-center gap-1">
+<span class="material-symbols-outlined text-primary-container text-[16px]">task_alt</span>
+                            Free Cancellation
+                        </p>
+<p class="text-[11px] text-outline mt-1">Total ₹49,950 (inc. taxes)</p>
+</div>
+<button class="border border-primary text-primary font-bold px-6 py-2 rounded-full hover:bg-primary/10 transition-all">
+                        View Deal
+                    </button>
+</div>
+</div>
+</section>
+<!-- Insights Footer -->
+<div class="py-8 text-center space-y-2">
+<p class="text-on-surface-variant font-label-md text-label-md">Prices updated 2 minutes ago</p>
+<div class="flex justify-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+</div>
+</div>
+</main>
+<!-- Footer Content -->
+<footer class="bg-surface-dim border-t border-outline-variant/20 w-full py-stack-lg mt-stack-lg">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile w-full max-w-container-max mx-auto text-center space-y-4">
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary">RateRadar</h2>
+<div class="flex flex-wrap justify-center gap-4 text-on-surface-variant font-body-md text-body-md">
+<a class="hover:text-on-surface transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-on-surface transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-on-surface transition-colors" href="#">Security</a>
+<a class="hover:text-on-surface transition-colors" href="#">Partnerships</a>
+</div>
+<p class="text-on-surface-variant font-body-md text-body-md opacity-60">© 2024 RateRadar Intelligence. All rights reserved.</p>
+</div>
+</footer>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 rounded-t-lg bg-surface-container dark:bg-surface-container-lowest border-t border-outline-variant/30 shadow-lg flex justify-around items-center py-2 px-4">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-lg p-2" href="#">
+<span class="material-symbols-outlined">travel_explore</span>
+<span class="font-label-md text-label-md">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 transition-transform duration-200 -translate-y-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-md text-label-md">Deals</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-lg p-2" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="font-label-md text-label-md">Saved</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-lg p-2" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for OTA hover effects
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const logo = card.querySelector('.font-display-lg-mobile');
+                if (logo) {
+                    logo.classList.remove('opacity-60', 'text-on-surface-variant');
+                    logo.classList.add('opacity-100', 'text-primary');
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                if (!card.classList.contains('ring-1')) { // Don't reset if it's the highlighted card
+                    const logo = card.querySelector('.font-display-lg-mobile');
+                    if (logo) {
+                        logo.classList.add('opacity-60', 'text-on-surface-variant');
+                        logo.classList.remove('opacity-100', 'text-primary');
+                    }
+                }
+            });
+        });
+    </script>
+</body></html>

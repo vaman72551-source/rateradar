@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RateRadar | The Grand Regency Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#1a1c19",
+                    "secondary": "#c2c6db",
+                    "on-secondary-container": "#b0b4c9",
+                    "tertiary": "#c4c9df",
+                    "secondary-fixed": "#dee1f7",
+                    "surface-container-lowest": "#0d0f0c",
+                    "on-tertiary-container": "#3c4253",
+                    "on-primary-fixed-variant": "#5d4200",
+                    "surface": "#121411",
+                    "inverse-primary": "#7b5804",
+                    "surface-container-highest": "#333532",
+                    "on-error": "#690005",
+                    "secondary-container": "#414658",
+                    "inverse-on-surface": "#2f312e",
+                    "surface-dim": "#121411",
+                    "secondary-fixed-dim": "#c2c6db",
+                    "on-primary-container": "#573d00",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#333532",
+                    "surface-container": "#1e201d",
+                    "primary-container": "#d4a853",
+                    "on-primary-fixed": "#271900",
+                    "on-secondary-fixed-variant": "#414658",
+                    "surface-container-high": "#292a27",
+                    "primary-fixed": "#ffdea6",
+                    "outline-variant": "#4e4637",
+                    "on-tertiary": "#2a3041",
+                    "outline": "#9b8f7e",
+                    "on-primary": "#412d00",
+                    "surface-bright": "#383a36",
+                    "primary-fixed-dim": "#eec068",
+                    "on-background": "#e3e3de",
+                    "error-container": "#93000a",
+                    "primary": "#f2c36b",
+                    "on-tertiary-fixed-variant": "#404658",
+                    "on-secondary": "#2b3040",
+                    "background": "#121411",
+                    "tertiary-container": "#a9aec3",
+                    "on-secondary-fixed": "#161b2b",
+                    "on-surface-variant": "#d2c5b2",
+                    "tertiary-fixed-dim": "#c0c6dc",
+                    "surface-tint": "#eec068",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#151b2b",
+                    "tertiary-fixed": "#dde2f8",
+                    "inverse-surface": "#e3e3de",
+                    "on-surface": "#e3e3de"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "unit": "4px",
+                    "stack-lg": "32px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "price-display": ["DM Sans"],
+                    "display-lg": ["Playfair Display"],
+                    "display-lg-mobile": ["Playfair Display"],
+                    "headline-sm": ["Playfair Display"],
+                    "headline-md": ["Playfair Display"],
+                    "body-lg": ["DM Sans"],
+                    "title-lg": ["DM Sans"],
+                    "label-md": ["DM Sans"],
+                    "body-md": ["DM Sans"]
+            },
+            "fontSize": {
+                    "price-display": ["24px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(19, 25, 41, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 168, 83, 0.3);
+        }
+        .glass-card:hover {
+            border-color: rgba(212, 168, 83, 1);
+            transform: translateY(-4px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .metallic-gradient {
+            background: linear-gradient(135deg, #f2c36b 0%, #d4a853 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky bg-surface z-50 border-b border-outline-variant/30 shadow-sm">
+<nav class="flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-stack-lg">
+<span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">RateRadar</span>
+<div class="hidden md:flex gap-gutter items-center ml-stack-lg">
+<a class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary pb-1" href="#">Explore</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Deals</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Saved</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="p-2 hover:bg-surface-container-high transition-all duration-300 rounded-full hover:-translate-y-0.5 active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high transition-all duration-300 rounded-full hover:-translate-y-0.5 active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<button class="ml-stack-sm flex items-center gap-stack-sm px-4 py-2 rounded-full border border-outline-variant/50 hover:border-primary transition-all">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span class="font-label-md text-label-md">Profile</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-stack-lg">
+<!-- Hero Section: Wide Hotel Card -->
+<section class="mb-stack-lg">
+<div class="glass-card rounded-lg overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[400px]">
+<div class="lg:w-3/5 relative overflow-hidden">
+<img alt="The Grand Regency Exterior" class="w-full h-full object-cover" data-alt="A cinematic, wide-angle photograph of a majestic luxury hotel architecture at dusk. The building features golden illuminated windows and a sophisticated neoclassical facade. The atmosphere is opulent and serene, with a deep navy twilight sky and warm ambient lights reflecting on a pristine driveway. The image evokes a sense of exclusive high-end travel and architectural precision in a nocturnal setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKnw4cRt7u2F-ETS0pDxds6H7GPgaQijK6sZhWHIDrgGjesvmq3gOTm0HcLaDhxWAuvkXixVlA2ipQqmJs7ZR0LdbGbanxbI-cnYSHixppco-wpMpjqI3R98D9M7bkSkaQdez40V2B9jSi82xsHXmM_Hl9SMHUMkXMSBHcTIjc7bcBpIrFHPSd1N2ZhnUS1ghUqa9nAbKns2gUKkj1M_w12ERYfSHephvVLO6AJRtkqs7_hzUkQA5K7SFfHdzEDhzPW2h9O1zVMgr8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+</div>
+<div class="lg:w-2/5 p-stack-lg flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<h1 class="font-display-lg text-display-lg text-on-surface">The Grand Regency</h1>
+<div class="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full border border-primary/30">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-price-display text-primary text-sm">4.8</span>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-md flex items-center gap-2 mb-stack-lg">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                            Mayfair, London • Luxury District
+                        </p>
+<div class="grid grid-cols-2 gap-stack-md p-stack-md bg-surface-container-low rounded-DEFAULT border border-outline-variant/20">
+<div>
+<span class="text-on-surface-variant font-label-md block mb-1">Check-in / Out</span>
+<span class="text-on-surface font-title-lg text-sm">Oct 12 — Oct 15</span>
+</div>
+<div>
+<span class="text-on-surface-variant font-label-md block mb-1">Guests</span>
+<span class="text-on-surface font-title-lg text-sm">2 Adults, 1 Room</span>
+</div>
+</div>
+</div>
+<div class="flex gap-stack-md mt-stack-lg">
+<button class="flex-1 metallic-gradient text-on-primary font-title-lg text-sm py-4 rounded-DEFAULT hover:shadow-[0_0_20px_rgba(242,195,107,0.3)] transition-all uppercase tracking-widest">Update Dates</button>
+<button class="p-4 border border-primary/30 rounded-DEFAULT text-primary hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- RateRadar Intelligence Banner -->
+<section class="mb-stack-lg">
+<div class="relative overflow-hidden rounded-lg bg-surface-container-highest border border-primary/20 p-stack-lg">
+<div class="absolute top-0 right-0 p-stack-md opacity-20">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-stack-lg">
+<div class="flex items-center gap-stack-lg">
+<div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center border border-primary/40">
+<span class="material-symbols-outlined text-primary text-3xl">magic_button</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-1">RateRadar Intelligence</h2>
+<p class="text-on-surface-variant font-body-md max-w-md">Our AI detected a potential 15% price drop in the next 48 hours for this property. Agoda currently holds the lowest price across 14 providers.</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-on-surface-variant font-label-md">Total Intelligence Score</span>
+<span class="font-price-display text-4xl text-primary">98/100</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Filter / Control Bar -->
+<section class="mb-stack-md sticky top-24 z-40">
+<div class="glass-card px-6 py-4 rounded-full flex flex-wrap items-center justify-between gap-stack-md shadow-lg">
+<div class="flex items-center gap-stack-lg">
+<div class="flex items-center gap-stack-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span class="font-label-md">Filter by:</span>
+</div>
+<select class="bg-transparent border-none focus:ring-0 text-on-surface font-label-md cursor-pointer hover:text-primary transition-colors">
+<option>Price: Low to High</option>
+<option>OTA Rating</option>
+<option>Most Trusted</option>
+</select>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<div class="flex gap-stack-md">
+<span class="px-4 py-1 rounded-full bg-surface-container-high border border-outline-variant/50 text-label-md hover:border-primary transition-all cursor-pointer">Free Cancellation</span>
+<span class="px-4 py-1 rounded-full bg-surface-container-high border border-outline-variant/50 text-label-md hover:border-primary transition-all cursor-pointer">Breakfast Included</span>
+</div>
+</div>
+<div class="text-on-surface-variant font-label-md">
+                    Showing <span class="text-primary font-bold">12</span> live deals
+                </div>
+</div>
+</section>
+<!-- Comparison Table Area -->
+<section class="space-y-stack-md">
+<!-- Best Price Deal: Agoda -->
+<div class="glass-card rounded-lg p-stack-lg border-2 border-primary shadow-[0_0_25px_rgba(242,195,107,0.15)] relative overflow-hidden group">
+<div class="absolute top-0 right-0">
+<div class="metallic-gradient text-on-primary font-label-md px-6 py-1 transform rotate-45 translate-x-8 translate-y-4 shadow-md uppercase font-bold text-[10px] tracking-widest">Best Value</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 items-center gap-stack-lg">
+<!-- OTA & Rating -->
+<div class="md:col-span-3">
+<div class="h-8 mb-2 flex items-center">
+<img alt="Agoda Logo" class="h-full object-contain filter brightness-125 transition-all duration-300 group-hover:scale-105" data-alt="The Agoda logo, featuring its distinctive colorful circles and clean sans-serif typography, presented in high resolution against a transparent background. The logo is rendered with sharp precision and modern aesthetic, symbolizing global travel booking and digital hospitality services." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCveDs7W1nQtEfoxZidcLGsbWUNm9TqGoPZ5ON-2CjDeNbtjk5gnFNkk9HGaD1d4FPhRJ2IYYgRHm60q_Kx0tDph1e3DZJlVA4IQf44dN-fe-pPbRl9Dtqv2DSIc5fFB0l9IyZJ8PcI2vnbKpV6tG3TbZ4EQAtSITAZHSh5b9pxJQ4pFH34LdfGYnHQ1UhdBP-rled2o-PQ0OYb631RlL9RIta88zaFzEIAj0MLklFigpl67YInVzuGDoBTUUf_b5IkU0hbzwkZ46SV"/>
+</div>
+<div class="flex items-center gap-stack-sm mt-stack-sm">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star_half</span>
+</div>
+<span class="text-on-surface-variant font-label-md">(4.2k)</span>
+</div>
+</div>
+<!-- Policy -->
+<div class="md:col-span-3">
+<div class="space-y-1">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span class="font-label-md">Free Cancellation</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">payments</span>
+<span class="font-label-md">Pay at property available</span>
+</div>
+</div>
+</div>
+<!-- Pricing -->
+<div class="md:col-span-3 text-right">
+<div class="flex flex-col">
+<span class="text-on-surface-variant font-label-md line-through">$420</span>
+<div class="flex items-baseline justify-end gap-1">
+<span class="text-on-surface-variant font-body-md text-sm">from</span>
+<span class="font-price-display text-4xl text-primary">$357</span>
+<span class="text-on-surface-variant font-body-md text-sm">/night</span>
+</div>
+<span class="text-on-surface-variant font-label-md mt-1">Total: $1,071 (tax incl.)</span>
+</div>
+</div>
+<!-- Action -->
+<div class="md:col-span-3">
+<button class="w-full metallic-gradient text-on-primary font-title-lg text-sm py-4 rounded-DEFAULT shadow-lg hover:scale-105 active:scale-95 transition-all uppercase tracking-widest">Book Now</button>
+</div>
+</div>
+</div>
+<!-- Expedia Deal -->
+<div class="glass-card rounded-lg p-stack-lg border-outline-variant/30 hover:border-primary/50 group">
+<div class="grid grid-cols-1 md:grid-cols-12 items-center gap-stack-lg">
+<div class="md:col-span-3">
+<div class="h-8 mb-2 flex items-center">
+<img alt="Expedia Logo" class="h-full object-contain opacity-60 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all duration-300" data-alt="The Expedia logo with its iconic yellow sun-globe and bold blue typography, displayed clearly on a neutral background. The visual represents reliability and global reach in the travel industry, rendered with clean lines and professional digital finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcTgkXIZgf6UNjLnZ95NNeRBK304g7vCGKgMcsjOtnwHN-mZGCHbVvwp8REI-7z_o3XgOklC_FevnEy4SPqhELRRMv9RqKtKrFgiKocd8odDyvHK3hYjNkrQ_CltGROfXeS-RakOhNVqnCG8fsoj3AuotRFdwbh0fotVRRmCIiZO5NAUItfNzcUuubilCuQ-pX8BS9u0c9z-RBNtA6qKBfcLr5j47zr6CsLk877DSL69HYuBef2SP8eThFS89DvkSAXjt4RYnvWmz8"/>
+</div>
+<div class="flex items-center gap-stack-sm mt-stack-sm">
+<div class="flex text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+<span class="text-on-surface-variant font-label-md">(8.9k)</span>
+</div>
+</div>
+<div class="md:col-span-3">
+<div class="space-y-1">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">event_busy</span>
+<span class="font-label-md">Non-refundable</span>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">coffee</span>
+<span class="font-label-md">Breakfast included</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-3 text-right">
+<div class="flex flex-col">
+<div class="flex items-baseline justify-end gap-1">
+<span class="text-on-surface-variant font-body-md text-sm">from</span>
+<span class="font-price-display text-price-display text-on-surface">$385</span>
+<span class="text-on-surface-variant font-body-md text-sm">/night</span>
+</div>
+<span class="text-on-surface-variant font-label-md mt-1">Total: $1,155 (tax incl.)</span>
+</div>
+</div>
+<div class="md:col-span-3">
+<button class="w-full border border-primary/30 text-on-surface font-title-lg text-sm py-4 rounded-DEFAULT hover:bg-primary hover:text-on-primary transition-all uppercase tracking-widest">View Deal</button>
+</div>
+</div>
+</div>
+<!-- Booking.com Deal -->
+<div class="glass-card rounded-lg p-stack-lg border-outline-variant/30 hover:border-primary/50 group">
+<div class="grid grid-cols-1 md:grid-cols-12 items-center gap-stack-lg">
+<div class="md:col-span-3">
+<div class="h-8 mb-2 flex items-center">
+<img alt="Booking.com Logo" class="h-full object-contain opacity-60 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all duration-300" data-alt="The Booking.com logo in its signature navy blue and bright blue color scheme, featuring crisp sans-serif lettering. The image is a high-fidelity digital rendering that communicates professional reliability, travel booking efficiency, and modern e-commerce identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx2xFc7px1yRga0rEkUFKx6F3OM99DY0fobID0lN4zwpfyB1Wwf73GyTfROgcaev4PQWxV2-SR4-xXdfP6hgXjZygNPs-OI6TW77RvYd7xzMxHH4AgO7vXn1H35ANLALON4gUHiGu7BouhwDj89L880tjO-TMEHfQsl9fNA39YfQ0wyl64w3wJEi2wQwvDpjPhf7hkEzG7Tj9OgM-SKpWQ77F6xq91W_u7uYMJmdAlDKiu9f2FT3Nr7vxD4_pkyTz5C1WY8FFCi_Dn"/>
+</div>
+<div class="flex items-center gap-stack-sm mt-stack-sm">
+<div class="flex text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-on-surface-variant font-label-md">(12k)</span>
+</div>
+</div>
+<div class="md:col-span-3">
+<div class="space-y-1">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span class="font-label-md">Free Cancellation</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span class="font-label-md">Price Match Guarantee</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-3 text-right">
+<div class="flex flex-col">
+<div class="flex items-baseline justify-end gap-1">
+<span class="text-on-surface-variant font-body-md text-sm">from</span>
+<span class="font-price-display text-price-display text-on-surface">$398</span>
+<span class="text-on-surface-variant font-body-md text-sm">/night</span>
+</div>
+<span class="text-on-surface-variant font-label-md mt-1">Total: $1,194 (tax incl.)</span>
+</div>
+</div>
+<div class="md:col-span-3">
+<button class="w-full border border-primary/30 text-on-surface font-title-lg text-sm py-4 rounded-DEFAULT hover:bg-primary hover:text-on-primary transition-all uppercase tracking-widest">View Deal</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-stack-lg border-t border-outline-variant/20 bg-surface-container-lowest py-stack-lg">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop max-w-container-max mx-auto gap-stack-md">
+<div class="flex flex-col items-center md:items-start gap-stack-sm">
+<span class="font-headline-sm text-headline-sm text-primary">RateRadar</span>
+<span class="font-label-md text-label-md text-secondary opacity-60">© 2024 RateRadar Luxury Travel Intelligence. All rights reserved.</span>
+</div>
+<div class="flex flex-wrap justify-center gap-stack-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Cookie Settings</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for atmosphere
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>

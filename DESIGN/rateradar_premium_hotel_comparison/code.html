@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RateRadar | Find the Cheapest Hotel Rates</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .mesh-gradient-bg {
+            background-color: #121411;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(242, 195, 107, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(65, 70, 88, 0.2) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(242, 195, 107, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(65, 70, 88, 0.2) 0px, transparent 50%);
+            animation: mesh-move 15s ease infinite alternate;
+        }
+        @keyframes mesh-move {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 10% 10%; }
+        }
+        .glass-card {
+            background: rgba(19, 25, 41, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 168, 83, 0.3);
+        }
+        .input-glow:focus-within {
+            box-shadow: 0 0 20px -5px rgba(242, 195, 107, 0.3);
+            border-color: rgba(242, 195, 107, 1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#161b2b",
+                      "on-secondary": "#2b3040",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#383a36",
+                      "surface-tint": "#eec068",
+                      "on-secondary-container": "#b0b4c9",
+                      "surface-dim": "#121411",
+                      "surface-container": "#1e201d",
+                      "on-tertiary-fixed-variant": "#404658",
+                      "outline-variant": "#4e4637",
+                      "surface": "#121411",
+                      "surface-variant": "#333532",
+                      "surface-container-lowest": "#0d0f0c",
+                      "tertiary-fixed-dim": "#c0c6dc",
+                      "inverse-surface": "#e3e3de",
+                      "error-container": "#93000a",
+                      "primary": "#f2c36b",
+                      "primary-container": "#d4a853",
+                      "on-primary-fixed": "#271900",
+                      "tertiary-container": "#a9aec3",
+                      "inverse-primary": "#7b5804",
+                      "outline": "#9b8f7e",
+                      "tertiary-fixed": "#dde2f8",
+                      "secondary": "#c2c6db",
+                      "tertiary": "#c4c9df",
+                      "primary-fixed": "#ffdea6",
+                      "on-error": "#690005",
+                      "on-surface-variant": "#d2c5b2",
+                      "secondary-fixed": "#dee1f7",
+                      "background": "#121411",
+                      "on-surface": "#e3e3de",
+                      "error": "#ffb4ab",
+                      "primary-fixed-dim": "#eec068",
+                      "secondary-container": "#414658",
+                      "surface-container-high": "#292a27",
+                      "inverse-on-surface": "#2f312e",
+                      "secondary-fixed-dim": "#c2c6db",
+                      "on-tertiary-fixed": "#151b2b",
+                      "on-primary-container": "#573d00",
+                      "on-secondary-fixed-variant": "#414658",
+                      "on-background": "#e3e3de",
+                      "on-primary-fixed-variant": "#5d4200",
+                      "surface-container-low": "#1a1c19",
+                      "on-tertiary": "#2a3041",
+                      "on-tertiary-container": "#3c4253",
+                      "surface-container-highest": "#333532",
+                      "on-primary": "#412d00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "stack-sm": "8px",
+                      "margin-mobile": "16px",
+                      "stack-lg": "32px",
+                      "margin-desktop": "40px",
+                      "stack-md": "16px",
+                      "gutter": "24px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "price-display": ["DM Sans"],
+                      "display-lg": ["Playfair Display"],
+                      "body-md": ["DM Sans"],
+                      "body-lg": ["DM Sans"],
+                      "title-lg": ["DM Sans"],
+                      "display-lg-mobile": ["Playfair Display"],
+                      "headline-md": ["Playfair Display"],
+                      "label-md": ["DM Sans"],
+                      "headline-sm": ["Playfair Display"]
+              },
+              "fontSize": {
+                      "price-display": ["24px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                      "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md overflow-x-hidden mesh-gradient-bg min-h-screen">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 z-50 bg-surface dark:bg-surface border-b border-outline-variant/30">
+<div class="flex justify-between items-center px-margin-mobile h-16 w-full max-w-container-max mx-auto">
+<button aria-label="Menu" class="text-primary dark:text-primary-fixed-dim scale-95 active:duration-75 transition-transform">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tight">RateRadar</h1>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant/30">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBgo8jTCX2l9_f6ch_vindomIZtus-1JRCXXXAvdyknwcwEwD3_yqFyTwrs6nnBoKQoT3IeQEZDiDIT9Fguz_lvcu1w0XXSS5pu-D8kx8uiLx17s-r6TNP3mWPULkBQly-bFSnHNAyNm2fsAAtReml4vHrOFyyC8Q03-FbakRJriwMTbu821n2-ZuJVT-nnkjqtyzC4QX4krPhvU-ISQwAdJEgjAuV95yJpoxrbc0qk7C51p_IxQKG2pSMSk7t9NSkhakm_W2thSDW"/>
+</div>
+</div>
+</header>
+<main class="relative px-margin-mobile pt-stack-lg pb-32">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center space-y-stack-md">
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-on-surface max-w-xs mx-auto">
+                Find the Cheapest Rate for Any Hotel
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">
+                Paste any hotel link. We compare 8+ booking sites instantly.
+            </p>
+</section>
+<!-- Search Interaction Area -->
+<section class="mt-stack-lg">
+<div class="glass-card rounded-lg p-unit input-glow transition-all duration-300">
+<div class="flex flex-col space-y-unit">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/50 p-stack-md min-h-[120px] font-body-md text-body-md resize-none" placeholder="Paste Expedia, Booking.com, or hotel link here..."></textarea>
+<button class="w-full bg-primary text-on-primary font-title-lg text-title-lg py-4 rounded-full flex items-center justify-center space-x-2 shadow-lg active:scale-95 transition-all duration-200">
+<span>Compare Rates</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Trust Indicators -->
+<div class="mt-stack-md flex flex-wrap justify-center gap-x-4 gap-y-2">
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Free</span>
+</div>
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">no_accounts</span>
+<span>No signup</span>
+</div>
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">compare_arrows</span>
+<span>6-8 OTAs</span>
+</div>
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+<span>~3 sec</span>
+</div>
+</div>
+</section>
+<!-- Bento Highlights Section -->
+<section class="mt-12 grid grid-cols-2 gap-unit">
+<div class="col-span-2 glass-card rounded-lg p-stack-md overflow-hidden relative">
+<div class="relative z-10">
+<span class="font-label-md text-label-md text-primary-container block mb-1">Live Feed</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Recently Saved $142</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">at The Ritz-Carlton, Paris</p>
+</div>
+<div class="absolute top-0 right-0 w-32 h-full opacity-20">
+<img class="w-full h-full object-cover" data-alt="A luxurious hotel lobby with grand chandeliers, marble floors, and warm gold lighting, reflecting a high-end luxury hospitality aesthetic. The atmosphere is sophisticated and quiet, with deep shadows and metallic accents that match the dark mode UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUvn5GyCZUJvVhm0C6O9zlU8MrxcXkZBEPxCgN721cV7yGwFgkf3NUkm9ifi3hV2PmUaCRnGFDonxVaQpK_nrYk3ud1aKzPzdknwFLU-GKDel4QAPUfGK97hU3m3Tg9jx74JX0x6DoJapOeMhfvNr5Cyjfv8hWn2HST7VqXbCUFCRV6beUw8ktYw-75t_g33yFkfZESEzow_tBsu_eL8KizWrwXI1wilqhz7PEVUIsbtXpv9F9ub4l1bOf9lzT2nMyYd3Fp6npKVFi"/>
+</div>
+</div>
+<div class="glass-card rounded-lg p-stack-md flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<span class="font-title-lg text-title-lg text-on-surface mt-2">Real-time Data</span>
+</div>
+<div class="glass-card rounded-lg p-stack-md flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+<span class="font-title-lg text-title-lg text-on-surface mt-2">Verified Deals</span>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-lg bg-surface-dim dark:bg-surface-dim border-t border-outline-variant/20 mb-20 md:mb-0">
+<div class="flex flex-col items-center px-margin-mobile w-full max-w-container-max mx-auto space-y-stack-md">
+<h2 class="font-display-lg text-display-lg text-primary">RateRadar</h2>
+<div class="flex flex-wrap justify-center gap-4">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md" href="#">Security</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md" href="#">Partnerships</a>
+</div>
+<p class="text-on-surface-variant font-body-md text-body-md opacity-80 text-center">
+                © 2024 RateRadar Intelligence. All rights reserved.
+            </p>
+</div>
+</footer>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface-container dark:bg-surface-container-lowest border-t border-outline-variant/30 shadow-lg md:hidden">
+<div class="flex justify-around items-center py-2 px-4">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 Active: -translate-y-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">travel_explore</span>
+<span class="font-label-md text-label-md">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all" href="#">
+<span class="material-symbols-outlined">local_fire_department</span>
+<span class="font-label-md text-label-md">Deals</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="font-label-md text-label-md">Saved</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</div>
+</nav>
+<script>
+        // Micro-interaction for the CTA button
+        const ctaBtn = document.querySelector('button');
+        ctaBtn.addEventListener('mousedown', () => {
+            ctaBtn.classList.add('scale-95');
+        });
+        ctaBtn.addEventListener('mouseup', () => {
+            ctaBtn.classList.remove('scale-95');
+        });
+
+        // Simulating the "Results in ~3 sec" logic
+        const textarea = document.querySelector('textarea');
+        ctaBtn.addEventListener('click', () => {
+            if (textarea.value.trim() !== '') {
+                const originalText = ctaBtn.innerHTML;
+                ctaBtn.innerHTML = `
+                    <span class="material-symbols-outlined animate-spin">refresh</span>
+                    <span>Analyzing 8 sites...</span>
+                `;
+                ctaBtn.disabled = true;
+                ctaBtn.classList.add('opacity-80');
+
+                setTimeout(() => {
+                    ctaBtn.innerHTML = originalText;
+                    ctaBtn.disabled = false;
+                    ctaBtn.classList.remove('opacity-80');
+                    alert('Comparison complete! Redirecting to results...');
+                }, 3000);
+            } else {
+                textarea.focus();
+                textarea.placeholder = "Please paste a link first!";
+            }
+        });
+    </script>
+</body></html>

@@ -1,0 +1,31 @@
+{
+  "name": "assets/0d64686bf9094fd3acc2c8ad8d61dbf2",
+  "displayName": "Aureate Obsidian",
+  "styleGuidelines": "Brand & Style Guidelines for Aureate Obsidian theme",
+  "theme": {
+    "colorMode": "DARK",
+    "font": "PLAYFAIR_DISPLAY",
+    "roundness": "ROUND_FULL",
+    "customColor": "#d4a853",
+    "headlineFont": "PLAYFAIR_DISPLAY",
+    "bodyFont": "DM_SANS",
+    "labelFont": "DM_SANS",
+    "namedColors": {
+      "background": "#121411",
+      "primary": "#f2c36b",
+      "primary_container": "#d4a853",
+      "secondary": "#c2c6db",
+      "secondary_container": "#414658",
+      "tertiary": "#c4c9df",
+      "tertiary_container": "#a9aec3",
+      "surface": "#121411",
+      "surface_container": "#1e201d",
+      "surface_variant": "#333532",
+      "on_background": "#e3e3de",
+      "on_primary": "#412d00",
+      "on_secondary": "#2b3040",
+      "on_surface": "#e3e3de",
+      "on_surface_variant": "#d2c5b2"
+    }
+  }
+}
