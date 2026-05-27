@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, Share2, Award, ArrowUpDown, Info, ExternalLink, RefreshCw, Check } from 'lucide-react';
+import { Calendar, Users, Share2, Award, ArrowUpDown, Info, ExternalLink, RefreshCw, Check, MapPin } from 'lucide-react';
 import { convertUSD, formatCurrency, SUPPORTED_CURRENCIES } from '../utils/currency';
 
 export default function Results({ hotelDetails, rates, onBack, onNavigate, currency, onCurrencyChange, exchangeRates }) {
@@ -8,7 +8,7 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
   const [copied, setCopied] = useState(false);
   const [sparklinePoints, setSparklinePoints] = useState('');
 
-  const { hotelName, checkin, checkout, guests, nights } = hotelDetails;
+  const { hotelName, checkin, checkout, guests, nights, imageUrl, address } = hotelDetails;
 
   // Generate consistent rating based on hotel name length/hashing
   const getHotelStars = () => {
@@ -19,30 +19,21 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
     return (nameLen % 2) === 0 ? 5 : 4;
   };
 
+  // Keyword-based fallback image (used when real OTA image unavailable or fails)
   const getHotelImage = () => {
     const nameLower = hotelName.toLowerCase();
-    
-    // Curated high-fidelity overrides for popular test hotels to ensure absolute perfection for user reviews!
     if (nameLower.includes('taj') || nameLower.includes('palace') || nameLower.includes('mahal')) {
       return 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&auto=format&fit=crop&q=80';
     }
     if (nameLower.includes('sands') || nameLower.includes('marina')) {
       return 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=500&auto=format&fit=crop&q=80';
     }
-    if (nameLower.includes('ritz') || nameLower.includes('carlton') || nameLower.includes('kyoto') || nameLower.includes('tokyo')) {
+    if (nameLower.includes('ritz') || nameLower.includes('carlton')) {
       return 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&auto=format&fit=crop&q=80';
     }
-
-    // Dynamic search terms extraction
-    // Filter out common words
-    const ignoreWords = ['the', 'by', 'in', 'of', 'and', 'a', 'an', 'hotel', 'resort', 'stay', 'villas', 'villa', 'suites', 'suite', 'spa', 'luxury', 'premium'];
-    const words = hotelName
-      .replace(/[^\w\s]/g, '') // remove punctuation
-      .split(/\s+/)
-      .map(w => w.toLowerCase())
-      .filter(w => w.length > 2 && !ignoreWords.includes(w));
-
-    // Combine 'hotel' and up to 2 specific words to query LoremFlickr
+    const ignoreWords = ['the', 'by', 'in', 'of', 'and', 'a', 'an', 'hotel', 'resort', 'villas', 'suites', 'spa', 'luxury'];
+    const words = hotelName.replace(/[^\w\s]/g, '').split(/\s+/)
+      .map(w => w.toLowerCase()).filter(w => w.length > 2 && !ignoreWords.includes(w));
     const queryTags = ['hotel', ...words.slice(0, 2)];
     return `https://loremflickr.com/500/350/${queryTags.join(',')}`;
   };
@@ -181,19 +172,32 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
         </div>
 
         {/* Hotel Info Card */}
-        <div className="luxury-card overflow-hidden bg-primary-card border border-border mb-8 shadow-xl flex flex-col md:flex-row gap-6">
+        <div className="luxury-card overflow-hidden bg-primary-card border border-border mb-8 shadow-xl flex flex-col md:flex-row gap-0">
           {/* Thumbnail Image */}
-          <div className="w-full md:w-52 h-48 md:h-auto relative overflow-hidden flex-shrink-0">
-            <img 
-              src={getHotelImage()} 
-              alt={hotelName} 
-              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent md:bg-gradient-to-r md:from-transparent md:to-primary-card/35" />
+          <div className="w-full md:w-60 h-52 md:h-auto relative overflow-hidden flex-shrink-0 bg-primary-card">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={hotelName}
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                onError={(e) => {
+                  // If OTA CDN image fails, fall back to the keyword-based image
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = getHotelImage();
+                }}
+              />
+            ) : (
+              <img
+                src={getHotelImage()}
+                alt={hotelName}
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent md:bg-gradient-to-r md:from-transparent md:to-primary-card/30" />
           </div>
 
           {/* Info Content */}
-          <div className="flex-1 p-6 md:py-6 md:pr-6 md:pl-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex-1 p-6 md:py-6 md:pr-6 md:pl-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <div className="flex text-accent-gold">
@@ -205,10 +209,18 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                   Luxury Rating
                 </span>
               </div>
-              <h1 className="font-outfit text-2xl md:text-3xl font-bold text-text-primary mb-3">
+              <h1 className="font-outfit text-2xl md:text-3xl font-bold text-text-primary mb-1">
                 {hotelName}
               </h1>
-              
+
+              {/* Address line */}
+              {address && (
+                <div className="flex items-start gap-1.5 mb-3">
+                  <MapPin size={13} className="text-accent-gold mt-0.5 flex-shrink-0" />
+                  <span className="font-sans text-xs text-text-muted leading-snug">{address}</span>
+                </div>
+              )}
+
               {/* Meta details */}
               <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs md:text-sm text-text-muted font-sans mt-2">
                 <div className="flex items-center gap-1.5 bg-primary/40 px-3 py-1.5 rounded-lg border border-border/10">

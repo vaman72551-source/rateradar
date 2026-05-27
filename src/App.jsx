@@ -4,6 +4,7 @@ import Searching from './components/Searching';
 import Results from './components/Results';
 import AdminDashboard from './components/AdminDashboard';
 import { fetchHotelRates } from './utils/xoteloApi';
+import { fetchHotelMeta } from './utils/hotelMeta';
 import { detectUserCurrency, fetchExchangeRates, FALLBACK_RATES } from './utils/currency';
 
 export default function App() {
@@ -64,24 +65,35 @@ export default function App() {
 
     // Make sure scanning animation is visible for at least 2.5 seconds for a premium feel
     const minAnimationDelay = new Promise(resolve => setTimeout(resolve, 2500));
-    
+
+    // Fetch rates AND hotel meta (image + address) in parallel
     let fetchedRates = [];
+    let hotelMeta = { imageUrl: null, address: null };
     try {
-      fetchedRates = await fetchHotelRates(
-        details.hotelName,
-        details.hotelKey,
-        details.checkin,
-        details.checkout,
-        details.originalUrl,
-        details.ota,
-        details.guests
-      );
+      [fetchedRates, hotelMeta] = await Promise.all([
+        fetchHotelRates(
+          details.hotelName,
+          details.hotelKey,
+          details.checkin,
+          details.checkout,
+          details.originalUrl,
+          details.ota,
+          details.guests
+        ),
+        fetchHotelMeta(details.originalUrl, details.hotelName),
+      ]);
     } catch (err) {
-      console.error("Rates retrieval error: ", err);
+      console.error('Rates/meta retrieval error:', err);
     }
 
     await minAnimationDelay;
-    
+
+    // Merge image and address into hotel details before showing results
+    setHotelDetails(prev => ({
+      ...prev,
+      imageUrl: hotelMeta.imageUrl || null,
+      address: hotelMeta.address || null,
+    }));
     setRates(fetchedRates);
     setCurrentPage('results');
   };
