@@ -194,29 +194,6 @@ export default function Home({ onSearch, onNavigate, currency, onCurrencyChange 
             Rate<span className="text-accent-gold">Radar</span>
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Currency Dropdown */}
-          <div className="relative">
-            <select
-              value={currency}
-              onChange={(e) => onCurrencyChange(e.target.value)}
-              className="bg-primary-card text-text-primary hover:text-accent-gold border border-border hover:border-accent-gold/60 text-xs font-sans font-semibold px-3 py-1.5 rounded-full cursor-pointer outline-none transition-all appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%23d4a853%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px] bg-[right_10px_center] bg-no-repeat"
-            >
-              {SUPPORTED_CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code} className="bg-primary text-text-primary">
-                  {c.symbol} {c.code}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            onClick={() => onNavigate('admin')}
-            className="text-xs font-sans tracking-widest text-text-muted hover:text-accent-gold border border-border px-4 py-1.5 rounded-full transition-all uppercase"
-          >
-            Console
-          </button>
-        </div>
       </div>
 
       {/* Main Hero and Search Container */}
@@ -242,32 +219,64 @@ export default function Home({ onSearch, onNavigate, currency, onCurrencyChange 
                 onChange={(e) => setUrlInput(e.target.value)}
                 placeholder="Paste your hotel link from Booking.com, MakeMyTrip, Agoda, Expedia..."
                 rows="3"
-                className="w-full bg-primary/60 border border-border focus:border-accent-gold focus:ring-1 focus:ring-accent-gold rounded-xl p-4 text-text-primary placeholder:text-text-muted/60 resize-none outline-none font-sans text-sm md:text-base transition-all"
+                className="w-full bg-primary/60 border border-border focus:border-accent-gold focus:ring-1 focus:ring-accent-gold rounded-xl p-4 text-text-primary placeholder:text-text-muted/60 resize-none outline-none font-sans text-sm md:text-base transition-all min-h-[90px]"
               />
               <div className="absolute right-4 bottom-4 text-text-muted/40 pointer-events-none">
                 <Search size={20} />
               </div>
             </div>
 
-            {errorMsg && (
-              <div className="flex items-center gap-2 text-red-400 text-sm font-sans px-1">
-                <AlertCircle size={16} />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            {/* Inline Notifications / Errors */}
+            <div className="flex flex-col gap-1">
+              {urlInput.trim() && !errorMsg && (
+                <div className="flex items-center gap-1.5 text-emerald-500 text-xs font-sans px-1 animate-fade-in">
+                  <span>✓ URL detected</span>
+                </div>
+              )}
+              {errorMsg && (
+                <div className="flex items-center gap-2 text-red-400 text-sm font-sans px-1">
+                  <AlertCircle size={16} />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
+            </div>
 
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-2">
-              <div className="text-left w-full">
-                <span className="text-xs text-text-muted/80 font-sans">
-                  💡 We support full link parsing including mobile links.
-                </span>
+            {/* Currency selector inside input card area (bottom-left) */}
+            <div className="flex items-center gap-2 self-start mt-1">
+              <span className="text-xs font-sans text-text-muted">Currency:</span>
+              <div className="relative">
+                <select
+                  value={currency}
+                  onChange={(e) => onCurrencyChange(e.target.value)}
+                  className="bg-primary-card text-text-primary hover:text-accent-gold border border-border hover:border-accent-gold/60 text-xs font-sans font-semibold px-3 py-1.5 rounded-full cursor-pointer outline-none transition-all appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%23d4a853%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px] bg-[right_10px_center] bg-no-repeat"
+                >
+                  {SUPPORTED_CURRENCIES.map((c) => (
+                    <option key={c.code} value={c.code} className="bg-primary text-text-primary">
+                      {c.symbol} {c.code}
+                    </option>
+                  ))}
+                </select>
               </div>
+            </div>
+
+            {/* Compare Rates Button Block (centered / full-width) */}
+            <div className="flex flex-col items-center gap-2 mt-3 w-full">
               <button
                 type="submit"
-                className="w-full md:w-auto bg-accent-gold hover:bg-accent-gold/90 text-primary font-bold px-8 py-3 rounded-full font-sans transition-all transform active:scale-95 shadow-md uppercase tracking-wider text-sm flex items-center justify-center gap-2 whitespace-nowrap"
+                className="w-full md:w-auto md:px-16 bg-accent-gold hover:bg-accent-gold/90 text-primary font-bold py-3.5 rounded-full font-sans transition-all transform active:scale-95 shadow-md uppercase tracking-wider text-sm flex items-center justify-center gap-2"
               >
                 Compare Rates
               </button>
+              
+              {/* Expectation text */}
+              <p className="text-xs text-accent-gold/70 text-center font-sans font-semibold mt-1">
+                We'll show you a side-by-side price comparison in ~3 seconds
+              </p>
+              
+              {/* Hint text */}
+              <span className="text-[11px] text-text-muted/50 font-sans text-center mt-1">
+                💡 We support full link parsing including mobile links.
+              </span>
             </div>
           </form>
 
@@ -293,7 +302,10 @@ export default function Home({ onSearch, onNavigate, currency, onCurrencyChange 
 
         {/* Feature Pills */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-12">
-          <div className="flex items-center gap-4 bg-primary-card/50 border border-border/30 rounded-2xl p-4">
+          <div 
+            className="flex items-center gap-4 bg-primary-card/50 border rounded-2xl p-4 animate-fade-in"
+            style={{ borderColor: 'rgba(212, 168, 83, 0.3)' }}
+          >
             <div className="w-10 h-10 rounded-xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center text-accent-gold">
               <Shield size={20} />
             </div>
@@ -302,7 +314,10 @@ export default function Home({ onSearch, onNavigate, currency, onCurrencyChange 
               <p className="font-sans text-xs text-text-muted mt-0.5">No subscription, fees, or hidden markups.</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-primary-card/50 border border-border/30 rounded-2xl p-4">
+          <div 
+            className="flex items-center gap-4 bg-primary-card/50 border rounded-2xl p-4 animate-fade-in"
+            style={{ borderColor: 'rgba(212, 168, 83, 0.3)' }}
+          >
             <div className="w-10 h-10 rounded-xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center text-accent-gold">
               <Compass size={20} />
             </div>
@@ -311,7 +326,10 @@ export default function Home({ onSearch, onNavigate, currency, onCurrencyChange 
               <p className="font-sans text-xs text-text-muted mt-0.5">Booking.com, Agoda, Expedia, and local OTAs.</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-primary-card/50 border border-border/30 rounded-2xl p-4">
+          <div 
+            className="flex items-center gap-4 bg-primary-card/50 border rounded-2xl p-4 animate-fade-in"
+            style={{ borderColor: 'rgba(212, 168, 83, 0.3)' }}
+          >
             <div className="w-10 h-10 rounded-xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center text-accent-gold">
               <Zap size={20} />
             </div>
