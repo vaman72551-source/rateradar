@@ -67,25 +67,35 @@ export function parseHotelUrl(urlString) {
   // 1. MakeMyTrip Parser
   if (hostname.includes('makemytrip.com')) {
     result.ota = 'MakeMyTrip';
-    // MMT often has TAHotelCode or hotelId in search params
-    const hotelId = searchParams.get('hotelId') || searchParams.get('TAHotelCode') || searchParams.get('hotelcode');
-    
-    // Extract hotel name from path, e.g. /hotels/hotel-details-detail-taj_mahal_palace-mumbai.html
-    const pathParts = pathname.split('/');
-    const hotelDetailPart = pathParts.find(p => p.includes('hotel-details') || p.includes('hotel_details') || p.includes('detail-'));
-    if (hotelDetailPart) {
-      // Find the segments between 'detail-' and city or similar
-      const match = hotelDetailPart.match(/(?:detail-|details-)(.*?)(?:-.*)?\.html/i);
-      if (match && match[1]) {
-        result.hotelName = cleanHotelName(match[1]);
+    // MMT often has hotelId or TAHotelCode in search params
+    const hotelId = searchParams.get('hotelId') || searchParams.get('TAHotelCode') || searchParams.get('hotelcode') || searchParams.get('topHtlId');
+
+    // Primary: extract hotel name from searchText query param (standard MMT share URL format)
+    // e.g. /hotels/hotel-details/?hotelId=...&searchText=The+Shakti+Vilas+By+Trulyy
+    const searchText = searchParams.get('searchText') || searchParams.get('query');
+    if (searchText) {
+      result.hotelName = searchText.trim();
+    }
+
+    // Fallback: Extract hotel name from path slug, e.g. /hotels/hotel-details-detail-taj_mahal_palace-mumbai.html
+    if (!result.hotelName) {
+      const pathParts = pathname.split('/');
+      const hotelDetailPart = pathParts.find(p => p.includes('hotel-details') || p.includes('hotel_details') || p.includes('detail-'));
+      if (hotelDetailPart) {
+        // Match slug content between 'detail-'/'details-' and the city suffix or .html
+        const match = hotelDetailPart.match(/(?:detail-|details-)([^.]+?)(?:[-_][a-z]{3,})?(?:\.html)?$/i);
+        if (match && match[1]) {
+          result.hotelName = cleanHotelName(match[1]);
+        }
       }
     }
 
+    // Last resort: use hotelId as label
     if (!result.hotelName && hotelId) {
       result.hotelName = `MMT Hotel (${hotelId})`;
     }
 
-    // Checkin/checkout in format MMDDYYYY (like checkin=06262026)
+    // Checkin/checkout in format MMDDYYYY (like checkin=05282026)
     const checkinParam = searchParams.get('checkin') || searchParams.get('chk_in') || searchParams.get('checkInDate');
     const checkoutParam = searchParams.get('checkout') || searchParams.get('chk_out') || searchParams.get('checkOutDate');
 
