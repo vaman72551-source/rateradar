@@ -15,6 +15,44 @@ function parseMMDDYYYY(str) {
   return `${y}-${m}-${d}`;
 }
 
+// Helper to normalize various date string formats to YYYY-MM-DD
+export function normalizeDateStr(dateStr) {
+  if (!dateStr) return '';
+  dateStr = dateStr.trim();
+
+  // 1. Match YYYY-M(M)-D(D) or YYYY/M(M)/D(D) or YYYY.M(M).D(D)
+  const ymdMatch = dateStr.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (ymdMatch) {
+    return `${ymdMatch[1]}-${ymdMatch[2].padStart(2, '0')}-${ymdMatch[3].padStart(2, '0')}`;
+  }
+
+  // 2. Match 8-digit numeric formats: YYYYMMDD or MMDDYYYY
+  if (/^\d{8}$/.test(dateStr)) {
+    const year = parseInt(dateStr.slice(0, 4), 10);
+    if (year >= 2020 && year <= 2040) {
+      return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`;
+    }
+    return `${dateStr.slice(4, 8)}-${dateStr.slice(0, 2)}-${dateStr.slice(2, 4)}`;
+  }
+
+  // 3. Match D(D)-M(M)-YYYY or D(D)/M(M)/YYYY or M(M)/D(D)/YYYY
+  const dmyMatch = dateStr.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+  if (dmyMatch) {
+    const first = parseInt(dmyMatch[1], 10);
+    const second = parseInt(dmyMatch[2], 10);
+    const year = dmyMatch[3];
+    // If the first number is > 12, it must be Day, so DD-MM-YYYY
+    if (first > 12) {
+      return `${year}-${String(second).padStart(2, '0')}-${String(first).padStart(2, '0')}`;
+    }
+    // Otherwise, assume standard US format MM-DD-YYYY or fallback MM-DD-YYYY
+    return `${year}-${String(first).padStart(2, '0')}-${String(second).padStart(2, '0')}`;
+  }
+
+  return dateStr;
+}
+
+
 // Helper to clean up slugs into human readable names
 export function cleanHotelName(slug) {
   if (!slug) return '';
@@ -316,9 +354,32 @@ export function parseHotelUrl(urlString) {
     result.guests = parseInt(guestsParam, 10);
   }
 
+  // Normalize checkin and checkout using our global helper normalizeDateStr
+  result.checkin = normalizeDateStr(result.checkin);
+  result.checkout = normalizeDateStr(result.checkout);
+
+  // If check-in is valid but checkout is missing or invalid, calculate using length of stay (los)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(result.checkin) && !/^\d{4}-\d{2}-\d{2}$/.test(result.checkout)) {
+    const losParam = searchParams.get('los') || searchParams.get('nights') || searchParams.get('lengthOfStay') || searchParams.get('stay') || searchParams.get('los_nights');
+    if (losParam && !isNaN(losParam)) {
+      const nights = parseInt(losParam, 10);
+      if (nights > 0) {
+        try {
+          const parts = result.checkin.split('-');
+          const checkinDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          checkinDate.setDate(checkinDate.getDate() + nights);
+          result.checkout = formatDate(checkinDate);
+        } catch (e) {
+          // ignore parsing error
+        }
+      }
+    }
+  }
+
   // Ensure dates are parsed as valid YYYY-MM-DD and set datesExtracted flag
   const checkinValid = /^\d{4}-\d{2}-\d{2}$/.test(result.checkin);
   const checkoutValid = /^\d{4}-\d{2}-\d{2}$/.test(result.checkout);
+
 
   if (checkinValid && checkoutValid) {
     const start = new Date(result.checkin);
