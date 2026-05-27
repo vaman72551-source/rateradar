@@ -170,55 +170,144 @@ export function parseHotelUrl(urlString) {
       result.hotelName = cleanHotelName(lastPart.split('.h')[0]);
     }
 
-    const checkinParam = searchParams.get('startDate') || searchParams.get('chk_in') || searchParams.get('checkin');
-    const checkoutParam = searchParams.get('endDate') || searchParams.get('chk_out') || searchParams.get('checkout');
+    const checkinParam = searchParams.get('startDate') || searchParams.get('chk_in') || searchParams.get('checkin') || searchParams.get('d1');
+    const checkoutParam = searchParams.get('endDate') || searchParams.get('chk_out') || searchParams.get('checkout') || searchParams.get('d2');
     result.checkin = checkinParam || '';
     result.checkout = checkoutParam || '';
   }
-  // 5. Generic Fallback
+  // 5. Trip.com / Ctrip Parser
+  else if (hostname.includes('trip.com') || hostname.includes('ctrip.com')) {
+    result.ota = 'Trip.com';
+    // Try query params for hotel name first
+    const nameFromParam = searchParams.get('searchWord') || searchParams.get('hotelName') || searchParams.get('keyword');
+    if (nameFromParam) {
+      result.hotelName = nameFromParam.trim();
+    } else {
+      const pathParts = pathname.split('/').filter(Boolean);
+      result.hotelName = cleanHotelName(pathParts[pathParts.length - 1] || '');
+    }
+    const hotelId = searchParams.get('hotelId') || searchParams.get('id');
+    result.hotelKey = hotelId || '';
+
+    result.checkin = searchParams.get('checkIn') || searchParams.get('checkin') || '';
+    result.checkout = searchParams.get('checkOut') || searchParams.get('checkout') || '';
+  }
+  // 6. Hotels.com Parser
+  else if (hostname.includes('hotels.com')) {
+    result.ota = 'Hotels.com';
+    const nameFromParam = searchParams.get('q-destination') || searchParams.get('destination') || searchParams.get('q');
+    if (nameFromParam) {
+      result.hotelName = nameFromParam.trim();
+    } else {
+      const pathParts = pathname.split('/').filter(p => p && p !== 'hotel' && p !== 'hotels' && !/\.html$/i.test(p));
+      result.hotelName = cleanHotelName(pathParts[pathParts.length - 1] || '');
+    }
+    result.checkin = searchParams.get('q-check-in') || searchParams.get('startDate') || searchParams.get('checkin') || '';
+    result.checkout = searchParams.get('q-check-out') || searchParams.get('endDate') || searchParams.get('checkout') || '';
+  }
+  // 7. Trivago Parser
+  else if (hostname.includes('trivago.com')) {
+    result.ota = 'Trivago';
+    result.hotelName = searchParams.get('search[query]') || searchParams.get('destination') || searchParams.get('query') || '';
+    result.checkin = searchParams.get('search[checkinDay]') || searchParams.get('startDate') || searchParams.get('checkin') || '';
+    result.checkout = searchParams.get('search[checkoutDay]') || searchParams.get('endDate') || searchParams.get('checkout') || '';
+    if (!result.hotelName) {
+      const pathParts = pathname.split('/').filter(Boolean);
+      result.hotelName = cleanHotelName(pathParts[pathParts.length - 1] || '');
+    }
+  }
+  // 8. Goibibo Parser (Indian OTA)
+  else if (hostname.includes('goibibo.com')) {
+    result.ota = 'Goibibo';
+    result.hotelName = searchParams.get('searchtext') || searchParams.get('hotelname') || searchParams.get('query') || '';
+    if (!result.hotelName) {
+      const pathParts = pathname.split('/').filter(p => p && p !== 'hotels' && p !== 'hotel');
+      result.hotelName = cleanHotelName(pathParts[pathParts.length - 1] || '');
+    }
+    const checkinRaw = searchParams.get('checkin') || searchParams.get('chk_in') || '';
+    const checkoutRaw = searchParams.get('checkout') || searchParams.get('chk_out') || '';
+    // Goibibo uses YYYYMMDD format
+    result.checkin = checkinRaw.length === 8 && /^\d+$/.test(checkinRaw)
+      ? checkinRaw.slice(0,4) + '-' + checkinRaw.slice(4,6) + '-' + checkinRaw.slice(6,8)
+      : checkinRaw;
+    result.checkout = checkoutRaw.length === 8 && /^\d+$/.test(checkoutRaw)
+      ? checkoutRaw.slice(0,4) + '-' + checkoutRaw.slice(4,6) + '-' + checkoutRaw.slice(6,8)
+      : checkoutRaw;
+  }
+  // 9. Yatra / ClearTrip / EaseMyTrip (Indian OTAs)
+  else if (hostname.includes('yatra.com') || hostname.includes('cleartrip.com') || hostname.includes('easemytrip.com')) {
+    if (hostname.includes('yatra.com')) result.ota = 'Yatra';
+    else if (hostname.includes('cleartrip.com')) result.ota = 'ClearTrip';
+    else result.ota = 'EaseMyTrip';
+
+    result.hotelName = searchParams.get('searchText') || searchParams.get('query') || searchParams.get('hotelName') || searchParams.get('q') || '';
+    if (!result.hotelName) {
+      const pathParts = pathname.split('/').filter(p => p && p !== 'hotels' && p !== 'hotel' && !/^\d+$/.test(p));
+      result.hotelName = cleanHotelName(pathParts[pathParts.length - 1] || '');
+    }
+    result.checkin = searchParams.get('checkin') || searchParams.get('checkIn') || searchParams.get('startDate') || searchParams.get('from') || '';
+    result.checkout = searchParams.get('checkout') || searchParams.get('checkOut') || searchParams.get('endDate') || searchParams.get('to') || '';
+  }
+  // 10. Generic Fallback — handles any OTA not explicitly listed above
   else {
     result.ota = 'Generic';
-    // Try to extract name from path
-    const pathParts = pathname.split('/').filter(p => p && !/\.html$/i.test(p) && p !== 'hotel' && p !== 'hotels');
-    if (pathParts.length > 0) {
-      result.hotelName = cleanHotelName(pathParts[pathParts.length - 1]);
+
+    // Try query params for hotel name (many OTAs embed the name in a param)
+    const nameFromParam = searchParams.get('searchText') || searchParams.get('hotelName')
+      || searchParams.get('query') || searchParams.get('q') || searchParams.get('name')
+      || searchParams.get('destination') || searchParams.get('property') || searchParams.get('keyword');
+    if (nameFromParam) {
+      result.hotelName = nameFromParam.trim();
     } else {
-      // Use domain name as a hint
-      result.hotelName = cleanHotelName(hostname.replace('www.', '').split('.')[0]);
+      // Fall back to path: take last meaningful path segment
+      const pathParts = pathname.split('/').filter(p =>
+        p && !/\.html?$/i.test(p) && p !== 'hotel' && p !== 'hotels' && p !== 'search' && !/^\d+$/.test(p)
+      );
+      if (pathParts.length > 0) {
+        result.hotelName = cleanHotelName(pathParts[pathParts.length - 1]);
+      } else {
+        result.hotelName = cleanHotelName(hostname.replace('www.', '').split('.')[0]);
+      }
     }
 
-    // Try common query keys for dates
-    const checkinKeys = ['checkin', 'check_in', 'checkindate', 'startdate', 'start', 'from', 'chk_in', 'in'];
-    const checkoutKeys = ['checkout', 'check_out', 'checkoutdate', 'enddate', 'end', 'to', 'chk_out', 'out'];
+    // Try many common checkin/checkout param names
+    const checkinKeys = ['checkin', 'checkIn', 'check_in', 'check-in', 'checkindate',
+      'startdate', 'startDate', 'start', 'from', 'arrival', 'chk_in', 'd1', 'in'];
+    const checkoutKeys = ['checkout', 'checkOut', 'check_out', 'check-out', 'checkoutdate',
+      'enddate', 'endDate', 'end', 'to', 'departure', 'chk_out', 'd2', 'out'];
 
     let foundIn = '';
     let foundOut = '';
 
     for (const key of checkinKeys) {
-      if (searchParams.has(key)) {
-        foundIn = searchParams.get(key);
-        break;
-      }
+      const v = searchParams.get(key);
+      if (v) { foundIn = v; break; }
     }
     for (const key of checkoutKeys) {
-      if (searchParams.has(key)) {
-        foundOut = searchParams.get(key);
-        break;
+      const v = searchParams.get(key);
+      if (v) { foundOut = v; break; }
+    }
+
+    // Normalise various date formats to YYYY-MM-DD
+    const normDate = (raw) => {
+      if (!raw) return '';
+      // MMDDYYYY  (8 digit, starts with 0-1)
+      if (/^\d{8}$/.test(raw) && parseInt(raw.slice(0,2)) <= 12) {
+        return `${raw.slice(4,8)}-${raw.slice(0,2)}-${raw.slice(2,4)}`;
       }
-    }
+      // YYYYMMDD  (8 digit)
+      if (/^\d{8}$/.test(raw)) {
+        return `${raw.slice(0,4)}-${raw.slice(4,6)}-${raw.slice(6,8)}`;
+      }
+      // MM/DD/YYYY
+      const slashMatch = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (slashMatch) return `${slashMatch[3]}-${slashMatch[1].padStart(2,'0')}-${slashMatch[2].padStart(2,'0')}`;
+      // Already YYYY-MM-DD or similar — pass through
+      return raw;
+    };
 
-    // Handle MMDDYYYY in generic search if found
-    if (foundIn && foundIn.length === 8 && /^\d+$/.test(foundIn)) {
-      result.checkin = parseMMDDYYYY(foundIn);
-    } else {
-      result.checkin = foundIn || '';
-    }
-
-    if (foundOut && foundOut.length === 8 && /^\d+$/.test(foundOut)) {
-      result.checkout = parseMMDDYYYY(foundOut);
-    } else {
-      result.checkout = foundOut || '';
-    }
+    result.checkin = normDate(foundIn);
+    result.checkout = normDate(foundOut);
   }
 
   // Parse guests parameter if it exists
