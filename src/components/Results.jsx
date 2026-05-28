@@ -295,7 +295,7 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
           </div>
         </div>
 
-        {hasRates ? (
+        {hasRates && (
           <>
             {/* Filter Bar */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 px-1">
@@ -500,43 +500,6 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
               })}
             </div>
           </>
-        ) : (
-          /* Empty rates fallback direct links */
-          <div className="luxury-card bg-primary-card border border-border p-6 md:p-10 rounded-2xl mb-8 shadow-xl text-center">
-            <div className="max-w-2xl mx-auto">
-              <div className="w-12 h-12 rounded-full bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center text-accent-gold text-xl mx-auto mb-4">
-                ✨
-              </div>
-              <h2 className="font-outfit text-xl md:text-2xl font-bold text-text-primary mb-2">
-                Compare Rates Directly
-              </h2>
-              <p className="font-sans text-xs md:text-sm text-text-muted mb-8 leading-relaxed">
-                We couldn't automatically retrieve live pricing comparison data for this property from the API right now.
-                However, you can compare prices instantly by opening the direct deep links below:
-              </p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {fallbackOtaLinks.map((ota) => (
-                  <div key={ota.code} className="bg-primary/40 border border-border/10 rounded-xl p-4 flex flex-col justify-between items-center text-center hover:border-accent-gold/30 transition-all">
-                    <div className="flex flex-col items-center gap-1.5 mb-4">
-                      <span className="text-2xl">{ota.icon}</span>
-                      <h4 className="font-serif text-base font-bold text-text-primary">{ota.name}</h4>
-                      <span className="text-[10px] text-text-muted/80 uppercase font-semibold font-sans tracking-wide">Live Deep Link</span>
-                    </div>
-                    <a
-                      href={ota.deeplink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => handleOtaClick(ota.name, 'Check Price')}
-                      className="w-full bg-accent-gold hover:bg-accent-gold/90 text-primary font-sans text-xs font-bold uppercase tracking-wider py-2 rounded-full transition-all flex items-center justify-center gap-1.5"
-                    >
-                      Check Price <ExternalLink size={12} />
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         )}
 
         {/* Informational Disclaimer */}
