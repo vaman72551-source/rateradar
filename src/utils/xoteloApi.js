@@ -187,8 +187,39 @@ function extractPriceFromUrl(originalUrl) {
   return null;
 }
 
+// OTA canonical codes and display details mapping
+const OTA_DETAILS = {
+  booking: { name: 'Booking.com', code: 'BookingCom' },
+  agoda: { name: 'Agoda', code: 'Agoda' },
+  trip: { name: 'Trip.com', code: 'TripCom' },
+  expedia: { name: 'Expedia', code: 'Expedia' },
+  makemytrip: { name: 'MakeMyTrip', code: 'MakeMyTrip' },
+  goibibo: { name: 'Goibibo', code: 'Goibibo' },
+  hotels: { name: 'Hotels.com', code: 'Hotels' },
+  trivago: { name: 'Trivago', code: 'Trivago' }
+};
+
+function getCanonicalOta(name, code) {
+  const n = (name || '').toLowerCase();
+  const c = (code || '').toLowerCase();
+  
+  if (n.includes('booking') || c.includes('booking')) return 'booking';
+  if (n.includes('agoda') || c.includes('agoda')) return 'agoda';
+  if (n.includes('trip') || c.includes('trip') || n.includes('ctrip') || c.includes('ctrip')) return 'trip';
+  if (n.includes('expedia') || c.includes('expedia')) return 'expedia';
+  if (n.includes('makemytrip') || c.includes('makemytrip') || n.includes('mmt') || c.includes('mmt')) return 'makemytrip';
+  if (n.includes('goibibo') || c.includes('goibibo')) return 'goibibo';
+  if (n.includes('yatra') || c.includes('yatra')) return 'yatra';
+  if (n.includes('cleartrip') || c.includes('cleartrip')) return 'cleartrip';
+  if (n.includes('easemytrip') || c.includes('easemytrip')) return 'easemytrip';
+  if (n.includes('hotels.com') || n.includes('hotels') || c.includes('hotels')) return 'hotels';
+  if (n.includes('trivago') || c.includes('trivago')) return 'trivago';
+  
+  return cleanOtaSlug(name) || code || 'generic';
+}
+
 // Main API call function
-export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkout, originalUrl = '', originalOta = '', guests = 2) {
+export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkout, originalUrl = '', originalOta = '', guests = 2, currencyCode = 'USD', exchangeRates = FALLBACK_RATES) {
   let resolvedKey = hotelKey;
 
   // Optimize search query by appending geographic location context from path slugs to prevent ambiguity (e.g. Taj Mahal Palace India)
@@ -248,7 +279,7 @@ export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkou
       try {
         // 1. Try local serverless function first
         const ratesRes = await fetch(
-          `/api/rates?hotel_key=${resolvedKey}&chk_in=${checkin}&chk_out=${checkout}`
+          `/api/rates?hotel_key=${resolvedKey}&chk_in=${checkin}&chk_out=${checkout}&currency=${currencyCode}`
         );
         if (ratesRes.ok) {
           ratesData = await ratesRes.json();
@@ -260,7 +291,7 @@ export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkou
         // Fallback: Try direct public API
         try {
           const ratesRes = await fetch(
-            `https://data.xotelo.com/api/rates?hotel_key=${resolvedKey}&chk_in=${checkin}&chk_out=${checkout}`
+            `https://data.xotelo.com/api/rates?hotel_key=${resolvedKey}&chk_in=${checkin}&chk_out=${checkout}&currency=${currencyCode}`
           );
           if (ratesRes.ok) {
             ratesData = await ratesRes.json();
@@ -282,16 +313,53 @@ export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkou
             const end = new Date(checkout);
             const nights = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
 
-            // Format API rates into standard UI model
-            return validRates.map(r => {
+            // 1. Group rates by canonical OTA name and keep the lowest rate for each OTA
+            const groupedRatesMap = {};
+            validRates.forEach(r => {
+              const canonical = getCanonicalOta(r.name, r.code);
               const rateVal = parseFloat(r.rate);
-              // Use API tax if available, otherwise 12% est
-              const taxesVal = r.tax ? parseFloat(r.tax) : Math.round(rateVal * 0.12 * 100) / 100;
+              if (!groupedRatesMap[canonical] || rateVal < parseFloat(groupedRatesMap[canonical].rate)) {
+                groupedRatesMap[canonical] = r;
+              }
+            });
+            const uniqueRates = Object.values(groupedRatesMap);
+
+            // 2. Parse price from original URL if available
+            const urlPriceData = extractPriceFromUrl(originalUrl);
+
+            // 3. Format API rates into standard UI model, overriding the pasted OTA's price if available
+            return uniqueRates.map(r => {
+              const canonical = getCanonicalOta(r.name, r.code);
+              const otaDetail = OTA_DETAILS[canonical] || { name: r.name, code: r.code || r.name.replace(/\s+/g, '') };
+
+              let rateVal = parseFloat(r.rate);
+              let taxesVal = r.tax ? parseFloat(r.tax) : Math.round(rateVal * 0.12 * 100) / 100;
               
+              const apiCurrency = ratesData.result.currency || 'USD';
+              
+              // Override price logic using the canonical OTA name matching originalOta
+              const isMatch = canonical === cleanOtaSlug(originalOta);
+              if (isMatch && urlPriceData) {
+                const priceInUSD = urlPriceData.price / (exchangeRates[urlPriceData.currency] || FALLBACK_RATES[urlPriceData.currency] || 1);
+                const priceInApiCurrency = priceInUSD * (exchangeRates[apiCurrency] || FALLBACK_RATES[apiCurrency] || 1);
+                
+                // If URL price is the total stay price, divide by nights to get rate/night.
+                // Choose tax rate: 18% if API currency is INR, otherwise 12%
+                const taxRate = apiCurrency === 'INR' ? 0.18 : 0.12;
+                const totalPerNight = priceInApiCurrency / nights;
+                rateVal = totalPerNight / (1 + taxRate);
+                taxesVal = totalPerNight - rateVal;
+              }
+
+              // Since the UI converts from USD to target currency, we MUST return rates in USD!
+              const apiToUSDRate = exchangeRates[apiCurrency] || FALLBACK_RATES[apiCurrency] || 1;
+              const rateValUSD = rateVal / apiToUSDRate;
+              const taxesValUSD = taxesVal / apiToUSDRate;
+
               // Build the affiliate link
               const deeplink = buildOtaLink(
-                r.code || r.name.replace(/\s+/g, ''),
-                r.name,
+                otaDetail.code,
+                otaDetail.name,
                 hotelName,
                 resolvedKey,
                 checkin,
@@ -302,11 +370,11 @@ export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkou
               );
 
               return {
-                code: r.code || r.name.replace(/\s+/g, ''),
-                name: r.name,
-                rate: rateVal,
-                taxes: taxesVal,
-                total: Math.round((rateVal + taxesVal) * nights * 100) / 100,
+                code: otaDetail.code,
+                name: otaDetail.name,
+                rate: rateValUSD,
+                taxes: taxesValUSD,
+                total: Math.round((rateValUSD + taxesValUSD) * nights * 100) / 100,
                 nights,
                 deeplink,
                 rating: r.rating || 4.5
@@ -324,8 +392,8 @@ export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkou
   const urlPriceData = extractPriceFromUrl(originalUrl);
   if (urlPriceData) {
     const { price, currency: urlCurrency } = urlPriceData;
-    // Convert to USD base price using fallback exchange rate
-    const rateInUSD = price / (FALLBACK_RATES[urlCurrency] || 1);
+    // Convert total stay price to USD base price using exchangeRates
+    const totalStayInUSD = price / (exchangeRates[urlCurrency] || FALLBACK_RATES[urlCurrency] || 1);
     
     const start = new Date(checkin);
     const end = new Date(checkout);
@@ -340,11 +408,17 @@ export async function fetchHotelRates(hotelName, hotelKey = '', checkin, checkou
       { code: 'Expedia', name: 'Expedia', multiplier: 1.03, rating: 4.5 }
     ];
 
-    console.info(`Serving comparison rates using real-time Booking.com URL price: ${price} ${urlCurrency}`);
+    console.info(`Serving comparison rates using real-time URL price: ${price} ${urlCurrency}`);
 
     return otas.map(ota => {
-      const rateVal = Math.round(rateInUSD * ota.multiplier * 100) / 100;
-      const taxesVal = Math.round(rateVal * 0.12 * 100) / 100;
+      // Apply multiplier to the total stay price per night in USD
+      const totalPerNight = (totalStayInUSD * ota.multiplier) / nights;
+      
+      // Breakdown into base rate and tax (assuming 18% tax for INR, 12% others)
+      const taxRate = currencyCode === 'INR' ? 0.18 : 0.12;
+      const rateVal = totalPerNight / (1 + taxRate);
+      const taxesVal = totalPerNight - rateVal;
+
       const deeplink = buildOtaLink(
         ota.code,
         ota.name,

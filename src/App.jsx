@@ -78,7 +78,9 @@ export default function App() {
           details.checkout,
           details.originalUrl,
           details.ota,
-          details.guests
+          details.guests,
+          currency,
+          exchangeRates
         ),
         fetchHotelMeta(details.originalUrl, details.hotelName),
       ]);

@@ -16,6 +16,7 @@ export default async function handler(req, res) {
   const hotel_key = req.query.hotel_key || req.query.key;
   const chk_in = req.query.chk_in || req.query.checkin;
   const chk_out = req.query.chk_out || req.query.checkout;
+  const currency = req.query.currency || 'USD';
 
   if (!hotel_key || !chk_in || !chk_out) {
     return res.status(400).json({
@@ -31,21 +32,21 @@ export default async function handler(req, res) {
 
     if (apiKey) {
       // Query via RapidAPI
-      url = `https://xotelo-hotel-prices.p.rapidapi.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}`;
+      url = `https://xotelo-hotel-prices.p.rapidapi.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}&currency=${encodeURIComponent(currency)}`;
       headers = {
         'x-rapidapi-key': apiKey,
         'x-rapidapi-host': 'xotelo-hotel-prices.p.rapidapi.com'
       };
     } else {
       // Query direct fallback
-      url = `https://data.xotelo.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}`;
+      url = `https://data.xotelo.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}&currency=${encodeURIComponent(currency)}`;
     }
 
     const response = await fetch(url, { headers, method: 'GET' });
     if (!response.ok) {
       // If we query data.xotelo.com and it fails, let's try direct xotelo.com as a fallback
       if (!apiKey && url.includes('data.xotelo.com')) {
-        const fallbackUrl = `https://xotelo.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}`;
+        const fallbackUrl = `https://xotelo.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}&currency=${encodeURIComponent(currency)}`;
         const fallbackRes = await fetch(fallbackUrl, { method: 'GET' });
         if (fallbackRes.ok) {
           const data = await fallbackRes.json();
@@ -63,7 +64,7 @@ export default async function handler(req, res) {
     // If it's a network/DNS error on data.xotelo.com, try xotelo.com fallback
     if (!apiKey) {
       try {
-        const fallbackUrl = `https://xotelo.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}`;
+        const fallbackUrl = `https://xotelo.com/api/rates?hotel_key=${encodeURIComponent(hotel_key)}&chk_in=${encodeURIComponent(chk_in)}&chk_out=${encodeURIComponent(chk_out)}&currency=${encodeURIComponent(currency)}`;
         const fallbackRes = await fetch(fallbackUrl, { method: 'GET' });
         if (fallbackRes.ok) {
           const data = await fallbackRes.json();
