@@ -330,7 +330,7 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
               </div>
             </div>
 
-            {/* Desktop Comparison Table (md: and up) */}
+             {/* Desktop Comparison Table (md: and up) */}
             <div className="hidden md:block bg-primary-card border border-border rounded-xl overflow-hidden shadow-xl mb-6">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -338,21 +338,28 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                     <th className="py-4 px-6">OTA Booking Platform</th>
                     <th className="py-4 px-6 text-center">OTA Rating</th>
                     <th className="py-4 px-6">Price / Night</th>
-                    <th className="py-4 px-6">Total Price ({nights} nights)</th>
-                    <th className="py-4 px-6">Tax Status</th>
+                    <th className="py-4 px-6">Total Price ({nights} {nights === 1 ? 'night' : 'nights'})</th>
                     <th className="py-4 px-6 text-right">Reservation</th>
                   </tr>
                 </thead>
                 <tbody>
                   {sortedRates.map((otaRow, index) => {
                     const isCheapest = (showTaxes ? otaRow.total / nights : otaRow.rate) === cheapestRate;
-                    const rateInUSD = showTaxes ? otaRow.rate + (otaRow.taxes || 0) : otaRow.rate;
-                    const totalInUSD = showTaxes ? otaRow.total : otaRow.rate * nights;
-                    const taxesInUSD = otaRow.taxes * nights;
+                    
+                    const baseRateInCurrency = convertUSD(otaRow.rate, currency, exchangeRates);
+                    const taxPerNightInCurrency = convertUSD(otaRow.taxes, currency, exchangeRates);
+                    const totalPerNightInCurrency = convertUSD(otaRow.rate + otaRow.taxes, currency, exchangeRates);
+                    
+                    const totalBaseInCurrency = convertUSD(otaRow.rate * nights, currency, exchangeRates);
+                    const totalTaxInCurrency = convertUSD(otaRow.taxes * nights, currency, exchangeRates);
+                    const totalStayInCurrency = convertUSD(otaRow.total, currency, exchangeRates);
 
-                    const displayRateFormatted = formatCurrency(convertUSD(rateInUSD, currency, exchangeRates), currency);
-                    const displayTotalFormatted = formatCurrency(convertUSD(totalInUSD, currency, exchangeRates), currency);
-                    const displayTaxesFormatted = formatCurrency(convertUSD(taxesInUSD, currency, exchangeRates), currency);
+                    const baseRateFormatted = formatCurrency(baseRateInCurrency, currency);
+                    const totalPerNightFormatted = formatCurrency(totalPerNightInCurrency, currency);
+                    
+                    const totalBaseFormatted = formatCurrency(totalBaseInCurrency, currency);
+                    const totalTaxFormatted = formatCurrency(totalTaxInCurrency, currency);
+                    const totalStayFormatted = formatCurrency(totalStayInCurrency, currency);
 
                     return (
                       <tr
@@ -373,32 +380,30 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                         <td className="py-5 px-6 text-center font-sans text-sm text-text-muted font-semibold">
                           ⭐ {otaRow.rating} / 5.0
                         </td>
-                        <td className="py-5 px-6">
-                          <div className="font-sans text-xl font-bold text-text-primary">
-                            {displayRateFormatted}
+                        <td className="py-5 px-6 font-sans">
+                          <div className="text-lg font-bold text-text-primary">
+                            {baseRateFormatted} <span className="text-[10px] text-text-muted font-normal">/ night</span>
                           </div>
-                          {isCheapest && maxSavingsPercent > 0 && (
-                            <div className="text-[11px] font-sans font-bold text-green-400">
-                              Save {maxSavingsPercent}% vs highest
-                            </div>
-                          )}
+                          <div className="text-xs text-text-muted mt-0.5">
+                            {totalPerNightFormatted} <span className="text-[10px] text-green-400/90 font-medium">(incl. tax)</span>
+                          </div>
                         </td>
-                        <td className="py-5 px-6 font-sans text-lg text-text-primary">
-                          {displayTotalFormatted}
-                        </td>
-                        <td className="py-5 px-6 font-sans text-xs text-text-muted">
-                          {showTaxes ? (
-                            <span className="text-green-400 font-semibold">Taxes Included ({displayTaxesFormatted})</span>
-                          ) : (
-                            <span>Excl. taxes (+12% est.)</span>
-                          )}
+                        <td className="py-5 px-6 font-sans">
+                          <div className="text-lg font-bold text-text-primary">
+                            {totalStayFormatted}
+                          </div>
+                          <div className="text-xs text-text-muted mt-0.5 flex flex-wrap gap-1 items-center">
+                            <span>{totalBaseFormatted} base</span>
+                            <span className="text-text-muted/40">+</span>
+                            <span className="text-green-400/80">{totalTaxFormatted} tax</span>
+                          </div>
                         </td>
                         <td className="py-5 px-6 text-right">
                           <a
                             href={otaRow.deeplink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
+                            onClick={() => handleOtaClick(otaRow.name, totalPerNightFormatted)}
                             className={`inline-flex items-center gap-1 px-5 py-2 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${isCheapest ? 'bg-accent-gold text-primary hover:bg-accent-gold/90' : 'bg-primary border border-border text-text-primary hover:text-accent-gold'}`}
                           >
                             Book Now <ExternalLink size={12} />
@@ -415,13 +420,21 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
             <div className="md:hidden flex flex-col gap-4 mb-8">
               {sortedRates.map((otaRow) => {
                 const isCheapest = (showTaxes ? otaRow.total / nights : otaRow.rate) === cheapestRate;
-                const rateInUSD = showTaxes ? otaRow.rate + (otaRow.taxes || 0) : otaRow.rate;
-                const totalInUSD = showTaxes ? otaRow.total : otaRow.rate * nights;
-                const taxesInUSD = otaRow.taxes * nights;
+                
+                const baseRateInCurrency = convertUSD(otaRow.rate, currency, exchangeRates);
+                const taxPerNightInCurrency = convertUSD(otaRow.taxes, currency, exchangeRates);
+                const totalPerNightInCurrency = convertUSD(otaRow.rate + otaRow.taxes, currency, exchangeRates);
+                
+                const totalBaseInCurrency = convertUSD(otaRow.rate * nights, currency, exchangeRates);
+                const totalTaxInCurrency = convertUSD(otaRow.taxes * nights, currency, exchangeRates);
+                const totalStayInCurrency = convertUSD(otaRow.total, currency, exchangeRates);
 
-                const displayRateFormatted = formatCurrency(convertUSD(rateInUSD, currency, exchangeRates), currency);
-                const displayTotalFormatted = formatCurrency(convertUSD(totalInUSD, currency, exchangeRates), currency);
-                const displayTaxesFormatted = formatCurrency(convertUSD(taxesInUSD, currency, exchangeRates), currency);
+                const baseRateFormatted = formatCurrency(baseRateInCurrency, currency);
+                const totalPerNightFormatted = formatCurrency(totalPerNightInCurrency, currency);
+                
+                const totalBaseFormatted = formatCurrency(totalBaseInCurrency, currency);
+                const totalTaxFormatted = formatCurrency(totalTaxInCurrency, currency);
+                const totalStayFormatted = formatCurrency(totalStayInCurrency, currency);
 
                 return (
                   <div
@@ -442,29 +455,28 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 border-t border-b border-border/10 py-3 font-sans text-xs">
+                    <div className="grid grid-cols-2 gap-3 border-t border-b border-border/10 py-3 font-sans text-xs">
                       <div>
-                        <span className="text-text-muted">Rate / Night</span>
-                        <div className="text-base font-bold text-text-primary mt-0.5">
-                          {displayRateFormatted}
+                        <span className="text-text-muted block mb-0.5">Rate / Night</span>
+                        <div className="text-sm font-bold text-text-primary">
+                          {baseRateFormatted} <span className="text-[10px] text-text-muted font-normal">(excl. tax)</span>
+                        </div>
+                        <div className="text-xs text-text-muted mt-0.5">
+                          {totalPerNightFormatted} <span className="text-[9px] text-green-400 font-semibold">(incl. tax)</span>
                         </div>
                       </div>
                       <div>
-                        <span className="text-text-muted">Total ({nights} nights)</span>
-                        <div className="text-base font-bold text-text-primary mt-0.5">
-                          {displayTotalFormatted}
+                        <span className="text-text-muted block mb-0.5">Total ({nights} {nights === 1 ? 'night' : 'nights'})</span>
+                        <div className="text-sm font-bold text-text-primary">
+                          {totalStayFormatted}
+                        </div>
+                        <div className="text-[10px] text-text-muted mt-0.5">
+                          {totalBaseFormatted} + {totalTaxFormatted} tax
                         </div>
                       </div>
-                      <div className="col-span-2 mt-1">
+                      <div className="col-span-2 border-t border-border/5 pt-2">
                         <span className="text-text-muted">OTA Trust Rating:</span>{' '}
                         <span className="text-text-primary font-semibold">⭐ {otaRow.rating} / 5.0</span>
-                      </div>
-                      <div className="col-span-2 text-text-muted/80 mt-1">
-                        {showTaxes ? (
-                          <span className="text-green-400 font-semibold">Taxes Included ({displayTaxesFormatted})</span>
-                        ) : (
-                          <span>Excl. taxes (+12% est.)</span>
-                        )}
                       </div>
                     </div>
 
@@ -478,7 +490,7 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                       href={otaRow.deeplink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
+                      onClick={() => handleOtaClick(otaRow.name, totalPerNightFormatted)}
                       className={`w-full py-2.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2 ${isCheapest ? 'bg-accent-gold text-primary' : 'bg-primary border border-border text-text-primary'}`}
                     >
                       Book Now <ExternalLink size={12} />
