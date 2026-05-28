@@ -19,7 +19,7 @@ function cleanOtaSlug(otaName) {
 }
 
 // Build highly accurate, direct affiliate redirect links for each OTA
-function buildOtaLink(otaCode, otaName, hotelName, hotelKey, checkin, checkout, originalUrl = '', originalOta = '', guests = 2) {
+export function buildOtaLink(otaCode, otaName, hotelName, hotelKey, checkin, checkout, originalUrl = '', originalOta = '', guests = 2) {
   const otaSlug = cleanOtaSlug(otaName);
   const origOtaSlug = originalOta ? cleanOtaSlug(originalOta) : '';
 
@@ -69,6 +69,11 @@ function buildOtaLink(otaCode, otaName, hotelName, hotelKey, checkin, checkout, 
       } else if (otaSlug === 'hotels') {
         cleanUrl.searchParams.set('startDate', checkin);
         cleanUrl.searchParams.set('endDate', checkout);
+        cleanUrl.searchParams.set('rooms', '1');
+        cleanUrl.searchParams.set('adults', String(guests || 2));
+      } else if (otaSlug === 'goibibo') {
+        cleanUrl.searchParams.set('checkin', checkin.replace(/-/g, ''));
+        cleanUrl.searchParams.set('checkout', checkout.replace(/-/g, ''));
         cleanUrl.searchParams.set('rooms', '1');
         cleanUrl.searchParams.set('adults', String(guests || 2));
       } else {

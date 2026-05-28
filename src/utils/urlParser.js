@@ -60,7 +60,11 @@ export function cleanHotelName(slug) {
     .split(/[-_]+/)
     .map(word => {
       // Ignore common prefixes/suffixes in slug
-      if (['hotel', 'resort', 'spa', 'villas', 'h', 'detail'].includes(word.toLowerCase())) {
+      if (['hotel', 'resort', 'spa', 'villas', 'h', 'detail', 'details', 'information', 'info'].includes(word.toLowerCase())) {
+        return '';
+      }
+      // Ignore long database keys/numeric IDs (e.g. 6818694072631238706 or any other long sequence of digits)
+      if (/^\d{5,}$/.test(word)) {
         return '';
       }
       return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -68,6 +72,7 @@ export function cleanHotelName(slug) {
     .filter(Boolean)
     .join(' ');
 }
+
 
 // Robust URL Parser for RateRadar
 export function parseHotelUrl(urlString) {
@@ -257,7 +262,7 @@ export function parseHotelUrl(urlString) {
   // 8. Goibibo Parser (Indian OTA)
   else if (hostname.includes('goibibo.com')) {
     result.ota = 'Goibibo';
-    result.hotelName = searchParams.get('searchtext') || searchParams.get('hotelname') || searchParams.get('query') || '';
+    result.hotelName = searchParams.get('searchText') || searchParams.get('searchtext') || searchParams.get('hotelname') || searchParams.get('query') || '';
     if (!result.hotelName) {
       const pathParts = pathname.split('/').filter(p => p && p !== 'hotels' && p !== 'hotel');
       result.hotelName = cleanHotelName(pathParts[pathParts.length - 1] || '');

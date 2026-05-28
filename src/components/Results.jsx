@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Users, Share2, Award, ArrowUpDown, Info, ExternalLink, RefreshCw, Check, MapPin } from 'lucide-react';
 import { convertUSD, formatCurrency, SUPPORTED_CURRENCIES } from '../utils/currency';
+import { buildOtaLink } from '../utils/xoteloApi';
+
 
 export default function Results({ hotelDetails, rates, onBack, onNavigate, currency, onCurrencyChange, exchangeRates }) {
   const [sortBy, setSortBy] = useState('price_asc'); // 'price_asc', 'rating_desc'
@@ -96,28 +98,10 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
     });
   };
 
-  if (!rates || rates.length === 0) {
-    return (
-      <div className="min-height-screen flex flex-col justify-center items-center py-12 px-4 max-w-xl mx-auto text-center">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-3xl mb-6">
-          ⚠️
-        </div>
-        <h2 className="font-outfit text-2xl font-bold text-text-primary mb-3">Couldn't Fetch Rates</h2>
-        <p className="font-sans text-text-muted mb-6">
-          We support Booking.com, MakeMyTrip, Agoda, and Expedia booking URLs. Make sure the dates are valid and the URL matches.
-        </p>
-        <button
-          onClick={onBack}
-          className="bg-accent-gold hover:bg-accent-gold/90 text-primary font-bold px-6 py-2.5 rounded-full font-sans transition-all uppercase tracking-wide text-xs"
-        >
-          Try Another URL
-        </button>
-      </div>
-    );
-  }
+  const hasRates = rates && rates.length > 0;
 
-  // Sort and process rates
-  const sortedRates = [...rates].sort((a, b) => {
+  // Sort and process rates safely
+  const sortedRates = hasRates ? [...rates].sort((a, b) => {
     const aVal = showTaxes ? a.total / nights : a.rate;
     const bVal = showTaxes ? b.total / nights : b.rate;
 
@@ -127,11 +111,39 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
       return b.rating - a.rating;
     }
     return 0;
+  }) : [];
+
+  const cheapestRate = hasRates ? Math.min(...rates.map(r => showTaxes ? r.total / nights : r.rate)) : 0;
+  const mostExpensiveRate = hasRates ? Math.max(...rates.map(r => showTaxes ? r.total / nights : r.rate)) : 0;
+  const maxSavingsPercent = (hasRates && mostExpensiveRate > 0) ? Math.round(((mostExpensiveRate - cheapestRate) / mostExpensiveRate) * 100) : 0;
+
+  // Prepare fallback links for manual verification if automated rates are not returned
+  const fallbackOtaPlatforms = [
+    { code: 'BookingCom', name: 'Booking.com', icon: '🔵' },
+    { code: 'Agoda', name: 'Agoda', icon: '🟢' },
+    { code: 'MakeMyTrip', name: 'MakeMyTrip', icon: '🟠' },
+    { code: 'Expedia', name: 'Expedia', icon: '🟡' },
+    { code: 'TripCom', name: 'Trip.com', icon: '🌐' },
+    { code: 'Goibibo', name: 'Goibibo', icon: '🏨' }
+  ];
+
+  const fallbackOtaLinks = fallbackOtaPlatforms.map(platform => {
+    return {
+      ...platform,
+      deeplink: buildOtaLink(
+        platform.code,
+        platform.name,
+        hotelName,
+        hotelDetails.hotelKey || '',
+        checkin,
+        checkout,
+        hotelDetails.originalUrl || '',
+        hotelDetails.ota || '',
+        guests
+      )
+    };
   });
 
-  const cheapestRate = Math.min(...rates.map(r => showTaxes ? r.total / nights : r.rate));
-  const mostExpensiveRate = Math.max(...rates.map(r => showTaxes ? r.total / nights : r.rate));
-  const maxSavingsPercent = Math.round(((mostExpensiveRate - cheapestRate) / mostExpensiveRate) * 100);
 
   return (
     <div className="py-10 px-4 md:px-8 max-w-6xl mx-auto min-h-screen flex flex-col justify-between">
@@ -264,54 +276,125 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
           </div>
         </div>
 
-        {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 px-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted uppercase tracking-wider font-sans font-semibold">
-              Sort By:
-            </span>
-            <div className="flex gap-1 bg-primary-card border border-border/20 p-0.5 rounded-full">
-              <button
-                onClick={() => setSortBy('price_asc')}
-                className={`text-xs px-3 py-1.5 rounded-full transition-all font-sans font-medium ${sortBy === 'price_asc' ? 'bg-accent-gold text-primary font-bold' : 'text-text-muted hover:text-text-primary'}`}
-              >
-                Lowest Price
-              </button>
-              <button
-                onClick={() => setSortBy('rating_desc')}
-                className={`text-xs px-3 py-1.5 rounded-full transition-all font-sans font-medium ${sortBy === 'rating_desc' ? 'bg-accent-gold text-primary font-bold' : 'text-text-muted hover:text-text-primary'}`}
-              >
-                Highest Rated OTA
-              </button>
+        {hasRates ? (
+          <>
+            {/* Filter Bar */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 px-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-text-muted uppercase tracking-wider font-sans font-semibold">
+                  Sort By:
+                </span>
+                <div className="flex gap-1 bg-primary-card border border-border/20 p-0.5 rounded-full">
+                  <button
+                    onClick={() => setSortBy('price_asc')}
+                    className={`text-xs px-3 py-1.5 rounded-full transition-all font-sans font-medium ${sortBy === 'price_asc' ? 'bg-accent-gold text-primary font-bold' : 'text-text-muted hover:text-text-primary'}`}
+                  >
+                    Lowest Price
+                  </button>
+                  <button
+                    onClick={() => setSortBy('rating_desc')}
+                    className={`text-xs px-3 py-1.5 rounded-full transition-all font-sans font-medium ${sortBy === 'rating_desc' ? 'bg-accent-gold text-primary font-bold' : 'text-text-muted hover:text-text-primary'}`}
+                  >
+                    Highest Rated OTA
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-text-muted font-sans">Include taxes & fees (est. 12%)</span>
+                <button
+                  onClick={() => setShowTaxes(!showTaxes)}
+                  className={`w-10 h-6 flex items-center rounded-full p-0.5 transition-all ${showTaxes ? 'bg-accent-gold justify-end' : 'bg-primary-card border border-border justify-start'}`}
+                >
+                  <span className={`w-5 h-5 rounded-full shadow-md transition-all ${showTaxes ? 'bg-primary' : 'bg-text-muted'}`} />
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted font-sans">Include taxes & fees (est. 12%)</span>
-            <button
-              onClick={() => setShowTaxes(!showTaxes)}
-              className={`w-10 h-6 flex items-center rounded-full p-0.5 transition-all ${showTaxes ? 'bg-accent-gold justify-end' : 'bg-primary-card border border-border justify-start'}`}
-            >
-              <span className={`w-5 h-5 rounded-full shadow-md transition-all ${showTaxes ? 'bg-primary' : 'bg-text-muted'}`} />
-            </button>
-          </div>
-        </div>
+            {/* Desktop Comparison Table (md: and up) */}
+            <div className="hidden md:block bg-primary-card border border-border rounded-xl overflow-hidden shadow-xl mb-6">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-border/30 bg-primary/20 text-text-muted text-xs uppercase tracking-widest font-sans font-bold">
+                    <th className="py-4 px-6">OTA Booking Platform</th>
+                    <th className="py-4 px-6 text-center">OTA Rating</th>
+                    <th className="py-4 px-6">Price / Night</th>
+                    <th className="py-4 px-6">Total Price ({nights} nights)</th>
+                    <th className="py-4 px-6">Tax Status</th>
+                    <th className="py-4 px-6 text-right">Reservation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedRates.map((otaRow, index) => {
+                    const isCheapest = (showTaxes ? otaRow.total / nights : otaRow.rate) === cheapestRate;
+                    const rateInUSD = showTaxes ? otaRow.rate + (otaRow.taxes || 0) : otaRow.rate;
+                    const totalInUSD = showTaxes ? otaRow.total : otaRow.rate * nights;
+                    const taxesInUSD = otaRow.taxes * nights;
 
-        {/* Desktop Comparison Table (md: and up) */}
-        <div className="hidden md:block bg-primary-card border border-border rounded-xl overflow-hidden shadow-xl mb-6">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-border/30 bg-primary/20 text-text-muted text-xs uppercase tracking-widest font-sans font-bold">
-                <th className="py-4 px-6">OTA Booking Platform</th>
-                <th className="py-4 px-6 text-center">OTA Rating</th>
-                <th className="py-4 px-6">Price / Night</th>
-                <th className="py-4 px-6">Total Price ({nights} nights)</th>
-                <th className="py-4 px-6">Tax Status</th>
-                <th className="py-4 px-6 text-right">Reservation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedRates.map((otaRow, index) => {
+                    const displayRateFormatted = formatCurrency(convertUSD(rateInUSD, currency, exchangeRates), currency);
+                    const displayTotalFormatted = formatCurrency(convertUSD(totalInUSD, currency, exchangeRates), currency);
+                    const displayTaxesFormatted = formatCurrency(convertUSD(taxesInUSD, currency, exchangeRates), currency);
+
+                    return (
+                      <tr
+                        key={otaRow.code}
+                        className={`border-b border-border/10 transition-all ${isCheapest ? 'bg-accent-gold/[0.04] border-accent-gold/40' : 'hover:bg-primary/20'}`}
+                      >
+                        <td className="py-5 px-6 font-serif text-lg font-bold text-text-primary flex items-center gap-3">
+                          <span className="text-xl">
+                            {otaRow.name === 'Booking.com' ? '🔵' : otaRow.name === 'Agoda' ? '🟢' : otaRow.name === 'MakeMyTrip' ? '🟠' : otaRow.name === 'Expedia' ? '🟡' : '🌐'}
+                          </span>
+                          {otaRow.name}
+                          {isCheapest && (
+                            <span className="bg-green-500/10 border border-green-500/20 text-green-400 font-sans text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                              <Award size={10} /> Best Price 🏆
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-5 px-6 text-center font-sans text-sm text-text-muted font-semibold">
+                          ⭐ {otaRow.rating} / 5.0
+                        </td>
+                        <td className="py-5 px-6">
+                          <div className="font-sans text-xl font-bold text-text-primary">
+                            {displayRateFormatted}
+                          </div>
+                          {isCheapest && maxSavingsPercent > 0 && (
+                            <div className="text-[11px] font-sans font-bold text-green-400">
+                              Save {maxSavingsPercent}% vs highest
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-5 px-6 font-sans text-lg text-text-primary">
+                          {displayTotalFormatted}
+                        </td>
+                        <td className="py-5 px-6 font-sans text-xs text-text-muted">
+                          {showTaxes ? (
+                            <span className="text-green-400 font-semibold">Taxes Included ({displayTaxesFormatted})</span>
+                          ) : (
+                            <span>Excl. taxes (+12% est.)</span>
+                          )}
+                        </td>
+                        <td className="py-5 px-6 text-right">
+                          <a
+                            href={otaRow.deeplink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
+                            className={`inline-flex items-center gap-1 px-5 py-2 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${isCheapest ? 'bg-accent-gold text-primary hover:bg-accent-gold/90' : 'bg-primary border border-border text-text-primary hover:text-accent-gold'}`}
+                          >
+                            Book Now <ExternalLink size={12} />
+                          </a>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards (below md:) */}
+            <div className="md:hidden flex flex-col gap-4 mb-8">
+              {sortedRates.map((otaRow) => {
                 const isCheapest = (showTaxes ? otaRow.total / nights : otaRow.rate) === cheapestRate;
                 const rateInUSD = showTaxes ? otaRow.rate + (otaRow.taxes || 0) : otaRow.rate;
                 const totalInUSD = showTaxes ? otaRow.total : otaRow.rate * nights;
@@ -322,138 +405,108 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
                 const displayTaxesFormatted = formatCurrency(convertUSD(taxesInUSD, currency, exchangeRates), currency);
 
                 return (
-                  <tr
+                  <div
                     key={otaRow.code}
-                    className={`border-b border-border/10 transition-all ${isCheapest ? 'bg-accent-gold/[0.04] border-accent-gold/40' : 'hover:bg-primary/20'}`}
+                    className={`luxury-card p-5 bg-primary-card border ${isCheapest ? 'border-accent-gold' : 'border-border/40'} flex flex-col gap-4 shadow-md`}
                   >
-                    <td className="py-5 px-6 font-serif text-lg font-bold text-text-primary flex items-center gap-3">
-                      <span className="text-xl">
-                        {otaRow.name === 'Booking.com' ? '🔵' : otaRow.name === 'Agoda' ? '🟢' : otaRow.name === 'MakeMyTrip' ? '🟠' : otaRow.name === 'Expedia' ? '🟡' : '🌐'}
-                      </span>
-                      {otaRow.name}
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">
+                          {otaRow.name === 'Booking.com' ? '🔵' : otaRow.name === 'Agoda' ? '🟢' : otaRow.name === 'MakeMyTrip' ? '🟠' : otaRow.name === 'Expedia' ? '🟡' : '🌐'}
+                        </span>
+                        <h3 className="font-serif text-lg font-bold text-text-primary">{otaRow.name}</h3>
+                      </div>
                       {isCheapest && (
-                        <span className="bg-green-500/10 border border-green-500/20 text-green-400 font-sans text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                          <Award size={10} /> Best Price 🏆
+                        <span className="bg-green-500/10 border border-green-500/20 text-green-400 font-sans text-[10px] uppercase font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                          Best Price
                         </span>
                       )}
-                    </td>
-                    <td className="py-5 px-6 text-center font-sans text-sm text-text-muted font-semibold">
-                      ⭐ {otaRow.rating} / 5.0
-                    </td>
-                    <td className="py-5 px-6">
-                      <div className="font-sans text-xl font-bold text-text-primary">
-                        {displayRateFormatted}
-                      </div>
-                      {isCheapest && maxSavingsPercent > 0 && (
-                        <div className="text-[11px] font-sans font-bold text-green-400">
-                          Save {maxSavingsPercent}% vs highest
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 border-t border-b border-border/10 py-3 font-sans text-xs">
+                      <div>
+                        <span className="text-text-muted">Rate / Night</span>
+                        <div className="text-base font-bold text-text-primary mt-0.5">
+                          {displayRateFormatted}
                         </div>
-                      )}
-                    </td>
-                    <td className="py-5 px-6 font-sans text-lg text-text-primary">
-                      {displayTotalFormatted}
-                    </td>
-                    <td className="py-5 px-6 font-sans text-xs text-text-muted">
-                      {showTaxes ? (
-                        <span className="text-green-400 font-semibold">Taxes Included ({displayTaxesFormatted})</span>
-                      ) : (
-                        <span>Excl. taxes (+12% est.)</span>
-                      )}
-                    </td>
-                    <td className="py-5 px-6 text-right">
-                      <a
-                        href={otaRow.deeplink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
-                        className={`inline-flex items-center gap-1 px-5 py-2 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${isCheapest ? 'bg-accent-gold text-primary hover:bg-accent-gold/90' : 'bg-primary border border-border text-text-primary hover:text-accent-gold'}`}
-                      >
-                        Book Now <ExternalLink size={12} />
-                      </a>
-                    </td>
-                  </tr>
+                      </div>
+                      <div>
+                        <span className="text-text-muted">Total ({nights} nights)</span>
+                        <div className="text-base font-bold text-text-primary mt-0.5">
+                          {displayTotalFormatted}
+                        </div>
+                      </div>
+                      <div className="col-span-2 mt-1">
+                        <span className="text-text-muted">OTA Trust Rating:</span>{' '}
+                        <span className="text-text-primary font-semibold">⭐ {otaRow.rating} / 5.0</span>
+                      </div>
+                      <div className="col-span-2 text-text-muted/80 mt-1">
+                        {showTaxes ? (
+                          <span className="text-green-400 font-semibold">Taxes Included ({displayTaxesFormatted})</span>
+                        ) : (
+                          <span>Excl. taxes (+12% est.)</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {isCheapest && maxSavingsPercent > 0 && (
+                      <div className="text-xs font-sans font-bold text-green-400 -mt-2">
+                        Save {maxSavingsPercent}% vs most expensive site
+                      </div>
+                    )}
+
+                    <a
+                      href={otaRow.deeplink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
+                      className={`w-full py-2.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2 ${isCheapest ? 'bg-accent-gold text-primary' : 'bg-primary border border-border text-text-primary'}`}
+                    >
+                      Book Now <ExternalLink size={12} />
+                    </a>
+                  </div>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile Cards (below md:) */}
-        <div className="md:hidden flex flex-col gap-4 mb-8">
-          {sortedRates.map((otaRow) => {
-            const isCheapest = (showTaxes ? otaRow.total / nights : otaRow.rate) === cheapestRate;
-            const rateInUSD = showTaxes ? otaRow.rate + (otaRow.taxes || 0) : otaRow.rate;
-            const totalInUSD = showTaxes ? otaRow.total : otaRow.rate * nights;
-            const taxesInUSD = otaRow.taxes * nights;
-
-            const displayRateFormatted = formatCurrency(convertUSD(rateInUSD, currency, exchangeRates), currency);
-            const displayTotalFormatted = formatCurrency(convertUSD(totalInUSD, currency, exchangeRates), currency);
-            const displayTaxesFormatted = formatCurrency(convertUSD(taxesInUSD, currency, exchangeRates), currency);
-
-            return (
-              <div
-                key={otaRow.code}
-                className={`luxury-card p-5 bg-primary-card border ${isCheapest ? 'border-accent-gold' : 'border-border/40'} flex flex-col gap-4 shadow-md`}
-              >
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">
-                      {otaRow.name === 'Booking.com' ? '🔵' : otaRow.name === 'Agoda' ? '🟢' : otaRow.name === 'MakeMyTrip' ? '🟠' : otaRow.name === 'Expedia' ? '🟡' : '🌐'}
-                    </span>
-                    <h3 className="font-serif text-lg font-bold text-text-primary">{otaRow.name}</h3>
-                  </div>
-                  {isCheapest && (
-                    <span className="bg-green-500/10 border border-green-500/20 text-green-400 font-sans text-[10px] uppercase font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                      Best Price
-                    </span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 border-t border-b border-border/10 py-3 font-sans text-xs">
-                  <div>
-                    <span className="text-text-muted">Rate / Night</span>
-                    <div className="text-base font-bold text-text-primary mt-0.5">
-                      {displayRateFormatted}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-text-muted">Total ({nights} nights)</span>
-                    <div className="text-base font-bold text-text-primary mt-0.5">
-                      {displayTotalFormatted}
-                    </div>
-                  </div>
-                  <div className="col-span-2 mt-1">
-                    <span className="text-text-muted">OTA Trust Rating:</span>{' '}
-                    <span className="text-text-primary font-semibold">⭐ {otaRow.rating} / 5.0</span>
-                  </div>
-                  <div className="col-span-2 text-text-muted/80 mt-1">
-                    {showTaxes ? (
-                      <span className="text-green-400 font-semibold">Taxes Included ({displayTaxesFormatted})</span>
-                    ) : (
-                      <span>Excl. taxes (+12% est.)</span>
-                    )}
-                  </div>
-                </div>
-
-                {isCheapest && maxSavingsPercent > 0 && (
-                  <div className="text-xs font-sans font-bold text-green-400 -mt-2">
-                    Save {maxSavingsPercent}% vs most expensive site
-                  </div>
-                )}
-
-                <a
-                  href={otaRow.deeplink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => handleOtaClick(otaRow.name, displayRateFormatted)}
-                  className={`w-full py-2.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2 ${isCheapest ? 'bg-accent-gold text-primary' : 'bg-primary border border-border text-text-primary'}`}
-                >
-                  Book Now <ExternalLink size={12} />
-                </a>
+            </div>
+          </>
+        ) : (
+          /* Empty rates fallback direct links */
+          <div className="luxury-card bg-primary-card border border-border p-6 md:p-10 rounded-2xl mb-8 shadow-xl text-center">
+            <div className="max-w-2xl mx-auto">
+              <div className="w-12 h-12 rounded-full bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center text-accent-gold text-xl mx-auto mb-4">
+                ✨
               </div>
-            );
-          })}
-        </div>
+              <h2 className="font-outfit text-xl md:text-2xl font-bold text-text-primary mb-2">
+                Compare Rates Directly
+              </h2>
+              <p className="font-sans text-xs md:text-sm text-text-muted mb-8 leading-relaxed">
+                We couldn't automatically retrieve live pricing comparison data for this property from the API right now.
+                However, you can compare prices instantly by opening the direct deep links below:
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {fallbackOtaLinks.map((ota) => (
+                  <div key={ota.code} className="bg-primary/40 border border-border/10 rounded-xl p-4 flex flex-col justify-between items-center text-center hover:border-accent-gold/30 transition-all">
+                    <div className="flex flex-col items-center gap-1.5 mb-4">
+                      <span className="text-2xl">{ota.icon}</span>
+                      <h4 className="font-serif text-base font-bold text-text-primary">{ota.name}</h4>
+                      <span className="text-[10px] text-text-muted/80 uppercase font-semibold font-sans tracking-wide">Live Deep Link</span>
+                    </div>
+                    <a
+                      href={ota.deeplink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => handleOtaClick(ota.name, 'Check Price')}
+                      className="w-full bg-accent-gold hover:bg-accent-gold/90 text-primary font-sans text-xs font-bold uppercase tracking-wider py-2 rounded-full transition-all flex items-center justify-center gap-1.5"
+                    >
+                      Check Price <ExternalLink size={12} />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Informational Disclaimer */}
         <div className="bg-primary/20 border border-border/10 p-4 rounded-xl flex items-start gap-3 max-w-3xl">
