@@ -4,6 +4,21 @@ import { convertUSD, formatCurrency, SUPPORTED_CURRENCIES } from '../utils/curre
 import { buildOtaLink } from '../utils/xoteloApi';
 
 
+const LUXURY_HOTEL_IMAGES = [
+  'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=80', // Premium facade
+  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format&fit=crop&q=80', // Elegant suite
+  'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop&q=80', // Resort pool
+  'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800&auto=format&fit=crop&q=80', // Luxury interior
+  'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800&auto=format&fit=crop&q=80', // Boutique bedroom
+  'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&auto=format&fit=crop&q=80', // Grand lobby
+  'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop&q=80', // Ocean view resort
+  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&auto=format&fit=crop&q=80', // Seaside villa
+  'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800&auto=format&fit=crop&q=80', // Wellness spa hotel
+  'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&auto=format&fit=crop&q=80', // Historic palazzo
+  'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&auto=format&fit=crop&q=80', // Modern penthouse suite
+  'https://images.unsplash.com/photo-1517840901100-8179e982acb7?w=800&auto=format&fit=crop&q=80', // Classic hotel facade
+];
+
 export default function Results({ hotelDetails, rates, onBack, onNavigate, currency, onCurrencyChange, exchangeRates }) {
   const [sortBy, setSortBy] = useState('price_asc'); // 'price_asc', 'rating_desc'
   const [showTaxes, setShowTaxes] = useState(true);
@@ -24,21 +39,25 @@ export default function Results({ hotelDetails, rates, onBack, onNavigate, curre
   // Keyword-based fallback image (used when real OTA image unavailable or fails)
   const getHotelImage = () => {
     const nameLower = hotelName.toLowerCase();
-    if (nameLower.includes('taj') || nameLower.includes('palace') || nameLower.includes('mahal')) {
-      return 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&auto=format&fit=crop&q=80';
+    if (nameLower.includes('taj') && nameLower.includes('mahal') && nameLower.includes('palace')) {
+      return 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=80';
     }
-    if (nameLower.includes('sands') || nameLower.includes('marina')) {
-      return 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=500&auto=format&fit=crop&q=80';
+    if (nameLower.includes('marina') && nameLower.includes('sands')) {
+      return 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format&fit=crop&q=80';
     }
-    if (nameLower.includes('ritz') || nameLower.includes('carlton')) {
-      return 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&auto=format&fit=crop&q=80';
+    if (nameLower.includes('ritz') && nameLower.includes('carlton')) {
+      return 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80';
     }
-    const ignoreWords = ['the', 'by', 'in', 'of', 'and', 'a', 'an', 'hotel', 'resort', 'villas', 'suites', 'spa', 'luxury'];
-    const words = hotelName.replace(/[^\w\s]/g, '').split(/\s+/)
-      .map(w => w.toLowerCase()).filter(w => w.length > 2 && !ignoreWords.includes(w));
-    const queryTags = ['hotel', ...words.slice(0, 2)];
-    return `https://loremflickr.com/500/350/${queryTags.join(',')}`;
+
+    // Deterministic selection based on hotel name hashing
+    let hash = 0;
+    for (let i = 0; i < hotelName.length; i++) {
+      hash = hotelName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % LUXURY_HOTEL_IMAGES.length;
+    return LUXURY_HOTEL_IMAGES[index];
   };
+
 
   // Generate sparkline SVG path points
   useEffect(() => {
